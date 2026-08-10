@@ -49,6 +49,7 @@ htmlcov/
 .mypy_cache/
 
 # Personal notes
+docs/
 bara_home/text.txt
 front-end/static/pics/
 front-end/static/private.md
