@@ -11,6 +11,7 @@ env/
 # Environment variables
 .env
 .env.*
+!.env.example
 *.env
 
 # Django
@@ -49,7 +50,13 @@ htmlcov/
 .mypy_cache/
 
 # Personal notes
-docs/
+docs/*
+!docs/architecture/
+!docs/seo-keywords.md
+!docs/stripe-onboarding.md
+!docs/legal-drafts.md
+!docs/reporting-setup.md
 bara_home/text.txt
 front-end/static/pics/
 front-end/static/private.md
+dist-report-preview/

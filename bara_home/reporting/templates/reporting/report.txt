@@ -1,0 +1,9 @@
+{% autoescape off %}{{ title }}
+{{ period }}
+
+{% if introduction %}{{ introduction }}
+
+{% endif %}{% for label, amount in rows %}{{ label }}: {{ amount }}
+{% endfor %}
+{{ note }}
+{% endautoescape %}

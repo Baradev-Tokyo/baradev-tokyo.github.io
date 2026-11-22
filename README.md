@@ -2,6 +2,16 @@
 
 Bara is a Django freelance website. Customers choose a service package and submit a project brief. The brief and an editable proposal draft appear in Django admin.
 
+## Development foundation
+
+The [architecture audit and plan](docs/architecture/README.md) record verified hosting, the private/public boundary, data design, and approval gates. See the [Japanese SEO opportunities](docs/seo-keywords.md), [integration setup](docs/architecture/integrations.md), [Stripe Japan sandbox runbook](docs/stripe-onboarding.md), and [unpublished legal drafts](docs/legal-drafts.md).
+
+The private Django app includes a Stripe test-mode module, a health probe at `/ops/health/`, and read-only reporting contracts. Apply migrations in your local Django environment before opening admin. Stripe requires explicit opt-in and a test key. The static portfolio never includes private routes. Environment variable names are in [the sample configuration](.env.example).
+
+For scheduled multi-customer reports and transactional delivery, see the [reporting architecture](docs/architecture/reporting.md) and [local preview and deployment runbook](docs/reporting-setup.md). Install `requirements-reporting.txt` for PDF and PostgreSQL support. Sample and mock delivery are safe defaults.
+
+Run all private validation from `bara_home/` with `python manage.py test` and `python manage.py makemigrations --check --dry-run`. From the repository root, run the static build and page checker below. The separate **Validate Bara foundation** workflow runs these checks without Stripe or Google credentials.
+
 ## Hosting the public portfolio
 
 The same Django templates can generate English and Japanese static pages for a root-hosted URL. The export includes the homepage, service packages, case studies, and an email contact page. Package links take visitors to a prefilled email subject. The export needs Python 3.11 and the existing requirements. It reads no inquiry data and needs no database migration, Django secret key, third-party API, or Node build.
@@ -51,6 +61,14 @@ The public export uses email for inquiries. The original Django site still saves
 
 In [Search Console](https://search.google.com/search-console/), add a **URL prefix** property for `https://baradev-tokyo.github.io/` and select **HTML tag** verification. Copy only the tag’s `content` value to the Actions variable `BARA_GOOGLE_SITE_VERIFICATION`. Run the Pages workflow, verify ownership in Search Console, and submit `https://baradev-tokyo.github.io/sitemap.xml`. Search Console adds search impressions, clicks, and indexing reports alongside GA4’s on-site activity.
 
+## Consultation booking
+
+1. On a computer, sign in to your private Google account and choose **Create → Appointment schedule**. Create one shared booking page for all packages on your primary calendar. Start with 30-minute appointments, set the timezone to **Tokyo**, and leave only **Monday 12:00–20:00** and **Wednesday 15:00–20:00** open.
+2. Enable **Check calendars for availability** on the booking account’s primary calendar. Existing events marked **Busy** will automatically remove overlapping consultation slots. The schedule itself keeps all other days and times closed. A free personal account can use one booking page. Google requires an eligible plan to check secondary calendars automatically. [Google Calendar availability](https://support.google.com/calendar/answer/16287054)
+3. Set the meeting location to **Google Meet** and add a required booking question for the package name. Save, then copy the public link under **Booking pages**. Google adds confirmed bookings to your private calendar. Enable Google Calendar event notifications and Gmail alerts for that account in your phone’s settings. [Create a schedule](https://support.google.com/calendar/answer/10729749) · [Copy the booking link](https://support.google.com/calendar/answer/10733297)
+4. Under **Sharing options → Website embed → Inline booking page**, copy only the public iframe `src` URL. Set the GitHub Actions repository variable `BARA_GOOGLE_BOOKING_URL` to that URL and run **Publish Bara portfolio** on `main`. **Discuss this package** opens the live Google scheduler. A short share link works as a direct link. The site embeds only the appointment page, which can display your Google account name and photo. Your calendar events stay private. This uses no Google API project, paid integration, or backend. [Share an appointment schedule](https://support.google.com/calendar/answer/10733297)
+5. Before announcing the link, compare the public availability with an existing Busy appointment during consultation hours. Book one open slot with a test guest, confirm the Meet link and phone alert, then cancel the test booking. Analytics records clicks on the direct booking link as intent. Google does not send booking confirmations back to Bara’s static site.
+
 ## Run locally
 
 Use Python 3.11+ and run these commands from the repository root in PowerShell.
@@ -93,11 +111,3 @@ The package definitions and JPY planning ranges live in `bara_home/services/cata
 | Custom internal tool | ¥500,000–¥950,000 | [TIFFIN](https://www.tiffin.one/price) lists small systems for one business workflow from ¥500,000. |
 
 Run the workflow tests with `.venv/Scripts/python bara_home/manage.py test services`.
-
-## Consultation booking
-
-1. On a computer, sign in to your private Google account and choose **Create → Appointment schedule**. Create one shared booking page for all packages on your primary calendar. Start with 30-minute appointments, set the timezone to **Tokyo**, and leave only **Monday 12:00–20:00** and **Wednesday 15:00–20:00** open.
-2. Enable **Check calendars for availability** on the booking account’s primary calendar. Existing events marked **Busy** will automatically remove overlapping consultation slots. The schedule itself keeps all other days and times closed. A free personal account can use one booking page. Google requires an eligible plan to check secondary calendars automatically. [Google Calendar availability](https://support.google.com/calendar/answer/16287054)
-3. Set the meeting location to **Google Meet** and add a required booking question for the package name. Save, then copy the public link under **Booking pages**. Google adds confirmed bookings to your private calendar. Enable Google Calendar event notifications and Gmail alerts for that account in your phone’s settings. [Create a schedule](https://support.google.com/calendar/answer/10729749) · [Copy the booking link](https://support.google.com/calendar/answer/10733297)
-4. Under **Sharing options → Website embed → Inline booking page**, copy only the public iframe `src` URL. To replace the current public schedule, set the GitHub Actions repository variable `BARA_GOOGLE_BOOKING_URL` to that URL and run **Publish Bara portfolio** on `main`. **Discuss this package** opens the live Google scheduler. A short share link works as a direct link. The site embeds only the appointment page, which can display your Google account name and photo. Your calendar events stay private. This uses no Google API project, paid integration, or backend. [Share an appointment schedule](https://support.google.com/calendar/answer/10733297)
-5. Before announcing the link, compare the public availability with an existing Busy appointment during consultation hours. Book one open slot with a test guest, confirm the Meet link and phone alert, then cancel the test booking. Analytics records clicks on the direct booking link as intent. Google does not send booking confirmations back to Bara’s static site.

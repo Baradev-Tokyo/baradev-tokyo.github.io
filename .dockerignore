@@ -1,0 +1,15 @@
+.git
+.venv
+venv
+**/__pycache__
+**/*.pyc
+**/db.sqlite3*
+.env
+.env.*
+**/*.env
+dist
+build
+docs
+front-end/static/pics
+front-end/static/private.md
+bara_home/text.txt

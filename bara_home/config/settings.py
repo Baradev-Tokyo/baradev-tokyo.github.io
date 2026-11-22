@@ -18,7 +18,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
-BARA_GOOGLE_BOOKING_URL = os.getenv("BARA_GOOGLE_BOOKING_URL", "").strip()
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
@@ -36,7 +35,24 @@ INSTALLED_APPS = [
     'contact',
     'services',
     'about',
+    'operations',
+    'reporting',
 ]
+
+BARA_STRIPE_SANDBOX_ENABLED = os.getenv("BARA_STRIPE_SANDBOX_ENABLED") == "true"
+BARA_STRIPE_TEST_KEY = os.getenv("BARA_STRIPE_TEST_KEY", "")
+BARA_STRIPE_WEBHOOK_SECRET = os.getenv("BARA_STRIPE_WEBHOOK_SECRET", "")
+BARA_STRIPE_API_VERSION = os.getenv("BARA_STRIPE_API_VERSION", "2025-02-24.acacia")
+BARA_BILLING_BASE_URL = os.getenv("BARA_BILLING_BASE_URL", "http://127.0.0.1:8000")
+BARA_REPORTS_LIVE_EMAIL = os.getenv("BARA_REPORTS_LIVE_EMAIL") == "true"
+BARA_REPORTS_FROM_EMAIL = os.getenv("BARA_REPORTS_FROM_EMAIL", "")
+BARA_REPORTS_SENDER_DOMAIN = os.getenv("BARA_REPORTS_SENDER_DOMAIN", "")
+BARA_RESEND_API_KEY = os.getenv("BARA_RESEND_API_KEY", "")
+BARA_RESEND_WEBHOOK_SECRET = os.getenv("BARA_RESEND_WEBHOOK_SECRET", "")
+BARA_GOOGLE_BOOKING_URL = os.getenv("BARA_GOOGLE_BOOKING_URL", "").strip()
+BARA_SUPABASE_PROJECT_REF = os.getenv("BARA_SUPABASE_PROJECT_REF", "")
+BARA_SUPABASE_MANAGEMENT_TOKEN = os.getenv("BARA_SUPABASE_MANAGEMENT_TOKEN", "")
+BARA_SUPABASE_AUTO_RESUME = os.getenv("BARA_SUPABASE_AUTO_RESUME") == "true"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,6 +94,16 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+if os.getenv("BARA_DB_NAME"):
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ["BARA_DB_NAME"],
+        "HOST": os.getenv("BARA_DB_HOST", "localhost"),
+        "PORT": os.getenv("BARA_DB_PORT", "5432"),
+        "USER": os.environ["BARA_DB_USER"],
+        "PASSWORD": os.environ["BARA_DB_PASSWORD"],
+        "OPTIONS": {"sslmode": os.getenv("BARA_DB_SSLMODE", "verify-full"), "connect_timeout": 10},
+    }
 
 
 # Password validation

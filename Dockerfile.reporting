@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+WORKDIR /app
+
+COPY requirements.txt requirements-reporting.txt requirements-reporting-gcp.txt ./
+RUN pip install --no-cache-dir -r requirements-reporting-gcp.txt
+COPY bara_home ./bara_home
+COPY front-end ./front-end
+
+USER 10001
+ENTRYPOINT ["python", "bara_home/manage.py", "run_reporting", "--require-postgres"]
