@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
+from .booking import google_booking_url
 from .forms import AgreementTemplateForm
 from .models import AgreementTemplate, ProjectRequest
 
@@ -18,8 +19,12 @@ class ProjectWorkflowTests(TestCase):
         }
 
     def test_package_selection_and_submission(self):
-        response = self.client.get(reverse("services"))
-        self.assertContains(response, f'{reverse("contact")}?package=automation')
+        response = self.client.get("/services/")
+        detail_url = "/services/automation/"
+        self.assertContains(response, f'href="{detail_url}"')
+        detail = self.client.get(detail_url)
+        self.assertContains(detail, "Requirements gathering and review")
+        self.assertContains(detail, f'{reverse("contact")}?package=automation')
         response = self.client.get(reverse("contact"), {"package": "automation"})
         self.assertEqual(response.context["form"]["package"].value(), "automation")
 
@@ -51,6 +56,7 @@ class ProjectWorkflowTests(TestCase):
         for path, heading in (
             ("/ja/", "ご相談からご提案まで"),
             ("/ja/services/", "「業務自動化」を選ぶ"),
+            ("/ja/services/bilingual-site/", "日本語・英語原稿の提出と承認"),
             ("/ja/about/", "メールの自動返信"),
             ("/ja/contact/?package=automation", "ご希望のサービス"),
             ("/ja/contact/received/", "ご相談を受け付けました"),
@@ -106,3 +112,41 @@ class ProjectWorkflowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode(), project.contract_draft)
         self.assertIn("attachment", response.headers["Content-Disposition"])
+
+
+class BookingLinkTests(SimpleTestCase):
+    def test_booking_url_accepts_only_google_appointment_pages(self):
+        for url in ("https://calendar.app.google/BaraFixture",
+                    "https://calendar.google.com/calendar/appointments/schedules/Bara_fixture?gv=true"):
+            self.assertEqual(google_booking_url(url), url)
+        for url in ("http://calendar.app.google/BaraFixture", "https://calendar.google.com/calendar/u/0/r",
+                    "https://calendar.app.google.example.org/BaraFixture"):
+            with self.assertRaises(ValueError):
+                google_booking_url(url)
+
+    @override_settings(BARA_GOOGLE_BOOKING_URL="https://calendar.app.google/BaraFixture")
+    def test_package_details_offer_google_booking_in_both_languages(self):
+        for prefix in ("", "/ja"):
+            page = self.client.get(f"{prefix}/services/landing/")
+            self.assertContains(page, 'href="https://calendar.app.google/BaraFixture"')
+            self.assertContains(page, 'data-analytics-event="consultation_click" data-package="landing"')
+            self.assertContains(page, f'href="{prefix}/contact/?package=landing"')
+            self.assertNotContains(page, "<iframe")
+            self.assertNotContains(page, "bara-consultation-week")
+
+    @override_settings(BARA_GOOGLE_BOOKING_URL="")
+    def test_unconfigured_preview_shows_reference_hours(self):
+        page = self.client.get("/services/landing/")
+        self.assertContains(page, "12:00–20:00")
+        self.assertContains(page, "15:00–20:00")
+        self.assertContains(page, "Closed", count=5)
+        self.assertContains(page, "grid-column: 13 / 21")
+        self.assertContains(page, "grid-column: 16 / 21")
+
+    @override_settings(
+        BARA_GOOGLE_BOOKING_URL="https://calendar.google.com/calendar/appointments/schedules/Bara_fixture"
+    )
+    def test_only_public_appointment_schedule_is_embedded(self):
+        page = self.client.get("/services/landing/")
+        self.assertContains(page, 'src="https://calendar.google.com/calendar/appointments/schedules/Bara_fixture?gv=true"')
+        self.assertNotContains(page, "bara-consultation-week")

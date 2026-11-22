@@ -27,11 +27,19 @@ from django.utils.translation import gettext, override
 
 from about.views import about
 from home.views import home, privacy
-from services.catalog import PACKAGES
-from services.views import services
+from services.catalog import PACKAGES, PACKAGE_BY_SLUG
+from services.views import package_detail, services
+from services.workflows import WORKFLOWS
 
 PUBLIC_ASSETS = ("main.css", "bara/joey.jpg")
 SITE_URL = "https://baradev-tokyo.github.io"
+TITLES = {
+    "home": ("Tokyo Python & Django Developer | Bara Development", "東京のPython・Django開発 | Bara Development"),
+    "services": ("Web Development Services and Pricing | Bara", "Web開発のサービス・料金 | Bara"),
+    "about": ("Development Case Studies | Bara", "Web開発の制作実績 | Bara"),
+    "contact": ("Contact for a Development Project | Bara", "Web開発のご相談 | Bara"),
+    "privacy": ("Privacy Policy | Bara", "プライバシーポリシー | Bara"),
+}
 DESCRIPTIONS = {
     "home": ("Tokyo-based freelance Python and Django development for websites, web apps, dashboards and workflow automation.",
              "東京を拠点に、Python・Djangoを使ったWebサイト、Webアプリ、業務ダッシュボードの開発や業務自動化を行うBaraです。"),
@@ -77,25 +85,41 @@ def export():
 
         for language in ("en", "ja"):
             with override(language):
-                for route, view in (
-                    ("home", home), ("services", partial(services, static_export=True)),
-                    ("about", about), ("contact", contact),
-                    ("privacy", privacy),
-                ):
-                    path = reverse(route)
+                pages = [(route, {}, view) for route, view in (
+                    ("home", home), ("services", services), ("about", about),
+                    ("contact", contact), ("privacy", privacy),
+                )]
+                pages.extend(
+                    ("package_detail", {"slug": package.slug}, partial(package_detail, static_export=True))
+                    for package in PACKAGES
+                )
+                for route, kwargs, view in pages:
+                    path = reverse(route, kwargs=kwargs)
                     request = HttpRequest()
                     request.method = "GET"
                     request.path = request.path_info = path
+                    japanese = language == "ja"
+                    if route == "package_detail":
+                        package = PACKAGE_BY_SLUG[kwargs["slug"]]
+                        title = f"{gettext(package.name)} | Bara"
+                        description = WORKFLOWS[package.slug].description[japanese]
+                    else:
+                        title = TITLES[route][japanese]
+                        description = DESCRIPTIONS[route][japanese]
                     request.site_metadata = {
                         "canonical": SITE_URL + path,
                         "english": SITE_URL + translate_url(path, "en"),
                         "japanese": SITE_URL + translate_url(path, "ja"),
-                        "description": DESCRIPTIONS[route][language == "ja"],
+                        "description": description,
+                        "title": title,
+                        "image": SITE_URL + "/static/bara/joey.jpg",
+                        "profile_alt": "Baraの開発者、ジョーイ" if japanese else "Joey, the developer behind Bara",
+                        "business_schema": route == "home",
                         "measurement_id": measurement_id,
                         "verification": verification,
                     }
                     SubElement(SubElement(sitemap, "url"), "loc").text = SITE_URL + path
-                    response = view(request)
+                    response = view(request, **kwargs)
                     if response.status_code != 200:
                         raise RuntimeError(f"{path} returned HTTP {response.status_code}")
                     target = staging / path.strip("/") / "index.html"

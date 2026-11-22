@@ -30,6 +30,7 @@ jobs:
         env:
           BARA_GA_MEASUREMENT_ID: ${{ vars.BARA_GA_MEASUREMENT_ID }}
           BARA_GOOGLE_SITE_VERIFICATION: ${{ vars.BARA_GOOGLE_SITE_VERIFICATION }}
+          BARA_GOOGLE_BOOKING_URL: ${{ vars.BARA_GOOGLE_BOOKING_URL || 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3CY1n5VOvhu6O05xDPR3O_RX_f4w_hyhGm69scVfx0AT_Hi5-8rDYYEwvgkCmrLM_JRXbMfn58' }}
       - run: python scripts/check_pages.py
       - uses: actions/upload-pages-artifact@v4
         with:

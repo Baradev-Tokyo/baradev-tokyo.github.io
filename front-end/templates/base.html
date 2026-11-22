@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% translate "Bara | Freelance Software Engineering & Development" %}{% endblock %}</title>
+  <title>{% if request.site_metadata.title %}{{ request.site_metadata.title }}{% else %}{% block title %}{% translate "Bara | Freelance Software Engineering & Development" %}{% endblock %}{% endif %}</title>
   {% with seo=request.site_metadata %}
   {% if seo %}
   <meta name="description" content="{{ seo.description }}">
@@ -15,9 +15,32 @@
   <link rel="alternate" hreflang="ja" href="{{ seo.japanese }}">
   <link rel="alternate" hreflang="x-default" href="{{ seo.english }}">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Bara">
+  <meta property="og:site_name" content="Bara Development">
+  <meta property="og:title" content="{{ seo.title }}">
   <meta property="og:url" content="{{ seo.canonical }}">
   <meta property="og:description" content="{{ seo.description }}">
+  <meta property="og:image" content="{{ seo.image }}">
+  <meta property="og:image:alt" content="{{ seo.profile_alt }}">
+  <meta property="og:locale" content="{% if language == 'ja' %}ja_JP{% else %}en_US{% endif %}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ seo.title }}">
+  <meta name="twitter:description" content="{{ seo.description }}">
+  <meta name="twitter:image" content="{{ seo.image }}">
+  <meta name="twitter:image:alt" content="{{ seo.profile_alt }}">
+  {% if seo.business_schema %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "{{ seo.english }}#bara",
+    "name": "Bara Development",
+    "alternateName": "Bara",
+    "url": "{{ seo.english }}",
+    "email": "baradev.tokyo@gmail.com",
+    "areaServed": {"@type": "Country", "name": "Japan"}
+  }
+  </script>
+  {% endif %}
   {% if seo.verification %}<meta name="google-site-verification" content="{{ seo.verification }}">{% endif %}
   {% if seo.measurement_id %}
   <script defer src="{% static 'analytics.js' %}" data-measurement-id="{{ seo.measurement_id }}"></script>

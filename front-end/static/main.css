@@ -678,6 +678,20 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
 .bara-case, .bara-card[id] { scroll-margin-top: 1rem; }
 .bara-case:target { border-color: var(--line-blue); box-shadow: var(--shadow-sm); }
 .bara-form { max-width: 42rem; }
+.bara-package-steps { counter-reset: package-step; list-style: none; padding: 0; max-width: 52rem; }
+.bara-package-steps li { counter-increment: package-step; position: relative; padding: 1rem 1rem 1rem 3.5rem; margin-block: .75rem; border: 1px solid var(--paper-200); border-radius: var(--radius-sm); background: var(--paper-50); }
+.bara-package-steps li::before { content: counter(package-step); position: absolute; inset-inline-start: 1rem; background: var(--ink-900); color: white; width: 1.75rem; height: 1.75rem; border-radius: 50%; text-align: center; line-height: 1.75rem; }
+.bara-package-steps h3 { margin: 0 0 .4rem; font-size: 1.15rem; }
+.bara-package-steps p { margin: 0; }
+.bara-consultation { max-width: 52rem; }
+.bara-consultation summary { display: list-item; width: fit-content; }
+.bara-consultation[open] summary { margin-bottom: 1rem; }
+.bara-consultation-week { width: 100%; border-collapse: collapse; }
+.bara-consultation-week th, .bara-consultation-week td { text-align: start; padding: .4rem .5rem; }
+.bara-consultation-week th, .bara-consultation-week td:last-child { width: 1%; white-space: nowrap; }
+.bara-consultation-track { display: grid; grid-template-columns: repeat(24, 1fr); min-width: 3rem; height: .75rem; border-radius: .25rem; background: #dce1e8; overflow: hidden; }
+.bara-consultation-track span { grid-row: 1; background: var(--ink-700); }
+.bara-booking-frame { display: block; width: 100%; height: 680px; border: 1px solid var(--paper-200); border-radius: var(--radius-sm); }
 .bara-email-packages { padding-inline-start: 1.45rem; }
 .bara-email-packages li { padding: .3rem .5rem; }
 .bara-email-packages li:target { background: var(--paper-100); }

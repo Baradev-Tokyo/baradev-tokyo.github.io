@@ -1,0 +1,34 @@
+{% load i18n %}
+{% get_current_language as language %}
+{% url 'contact' as contact_url %}
+<details class="bara-consultation">
+  <summary class="bara-button">{% if language == 'ja' %}このサービスについて相談する{% else %}Discuss this package{% endif %}</summary>
+  {% if not booking_url %}
+  <h2>{% if language == 'ja' %}ご相談の受付時間（日本時間）{% else %}Consultation hours (Tokyo time){% endif %}</h2>
+  <p>{% if language == 'ja' %}グレーの時間帯は受付時間外です。{% else %}Grey blocks are outside consultation hours.{% endif %}</p>
+  <table class="bara-consultation-week">
+    <tbody>
+      {% for day, hours, start_column, end_column in consultation_week %}
+      <tr>
+        <th scope="row">{{ day }}</th>
+        <td><div class="bara-consultation-track" aria-hidden="true">{% if hours %}<span style="grid-column: {{ start_column }} / {{ end_column }}"></span>{% endif %}</div></td>
+        <td>{% if hours %}{{ hours }}{% elif language == 'ja' %}受付なし{% else %}Closed{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% if booking_url %}
+  <h2>{% if language == 'ja' %}ご相談の空き状況{% else %}Consultation availability{% endif %}</h2>
+  <p>{% if language == 'ja' %}予約できる時間は、Google カレンダーの予約画面に表示されます。{% else %}Google Calendar shows the current bookable times and the time zone on the booking page.{% endif %}</p>
+  <p>{% if language == 'ja' %}ご予約時に「{% translate package.name %}」とご記入ください。{% else %}Enter “{% translate package.name %}” when asked which package you want to discuss.{% endif %}</p>
+  {% if booking_embed_url %}
+  <iframe class="bara-booking-frame" src="{{ booking_embed_url }}" loading="lazy" title="{% if language == 'ja' %}Googleのご相談予約カレンダー{% else %}Google consultation booking calendar{% endif %}"></iframe>
+  {% endif %}
+  <p><a href="{{ booking_url }}" data-analytics-event="consultation_click" data-package="{{ package.slug }}">{% if language == 'ja' %}Googleの予約ページを開く{% else %}Open Google booking page{% endif %}</a></p>
+  {% else %}
+  <p>{% if language == 'ja' %}ご希望の時間をメールでお知らせください。{% else %}Email Bara to request a time within these hours.{% endif %}</p>
+  {% endif %}
+  <p><a href="{{ contact_url }}{% if static_export %}#{{ package.slug }}{% else %}?package={{ package.slug }}{% endif %}">{% if language == 'ja' %}メールで相談する{% else %}Ask by email{% endif %}</a></p>
+</details>

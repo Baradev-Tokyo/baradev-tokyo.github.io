@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate package.name %} | Bara{% endblock %}
+{% block content %}
+{% get_current_language as language %}
+<section class="bara-wrap bara-section">
+  <p><a href="{% url 'services' %}">{% translate "Back to packages" %}</a></p>
+  <h1>{% translate package.name %}</h1>
+  <p class="bara-intro">{{ description }}</p>
+  <p><strong>{{ package.estimate }}</strong> · {% if language == 'ja' %}費用の目安{% else %}Estimated project fee{% endif %}</p>
+  <h2>{% if language == 'ja' %}サービス内容{% else %}What’s included{% endif %}</h2>
+  <ul>{% for item in package.scope %}<li>{% translate item %}</li>{% endfor %}</ul>
+
+  <h2>{% if language == 'ja' %}制作の流れ{% else %}How the project works{% endif %}</h2>
+  <ol class="bara-package-steps" role="list">
+    {% for title, description in steps %}
+    <li><h3>{{ title }}</h3><p>{{ description }}</p></li>
+    {% endfor %}
+  </ol>
+
+  {% if package.slug == 'business-site' %}
+  <p><a href="{% url 'about' %}#pedal-somewhere">{% if language == 'ja' %}Pedal Somewhereの制作事例を見る{% else %}See the Pedal Somewhere case study{% endif %}</a></p>
+  {% endif %}
+  {% include "consultation.html" %}
+</section>
+{% endblock %}

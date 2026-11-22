@@ -3,6 +3,7 @@
 {% block title %}{% translate "Service packages | Bara" %}{% endblock %}
 
 {% block content %}
+{% get_current_language as language %}
 <section class="bara-wrap bara-section">
   <h1>{% translate "Service packages" %}</h1>
   <p class="bara-intro">{% translate "Prices are planning estimates in JPY. The proposal confirms scope, final fees, applicable taxes, and third-party costs." %}</p>
@@ -13,7 +14,12 @@
       <p>{% translate package.summary %}</p>
       <p class="bara-price">{{ package.estimate }}</p>
       <ul>{% for item in package.scope %}<li>{% translate item %}</li>{% endfor %}</ul>
-      <a class="bara-button" href="{% url 'contact' %}{% if static_export %}#{{ package.slug }}{% else %}?package={{ package.slug }}{% endif %}" data-analytics-event="package_click" data-package="{{ package.slug }}">{% translate package.name as package_name %}{% blocktranslate with package=package_name %}Choose {{ package }}{% endblocktranslate %}</a>
+      {% if package.slug == 'business-site' %}
+      <p><a href="{% url 'about' %}#pedal-somewhere">{% if language == 'ja' %}予約・決済サイトの制作事例{% else %}Booking and payment case study{% endif %}</a></p>
+      {% elif package.slug == 'automation' or package.slug == 'dashboard' %}
+      <p><a href="{% url 'about' %}#household-finance">{% if language == 'ja' %}業務自動化と集計の制作事例{% else %}Automation and reporting case study{% endif %}</a></p>
+      {% endif %}
+      <a class="bara-button" href="{% url 'package_detail' package.slug %}" data-analytics-event="package_click" data-package="{{ package.slug }}">{% translate package.name as package_name %}{% blocktranslate with package=package_name %}Choose {{ package }}{% endblocktranslate %}</a>
     </article>
     {% endfor %}
   </div>

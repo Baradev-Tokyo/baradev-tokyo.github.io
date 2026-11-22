@@ -1,15 +1,36 @@
+from django.conf import settings
+from django.http import Http404
 from django.shortcuts import redirect, render
+from django.utils.translation import get_language
 from django.views.decorators.http import require_safe, require_http_methods
 
+from .booking import consultation_week, google_booking_embed_url, google_booking_url
 from .catalog import PACKAGES, PACKAGE_BY_SLUG
 from .forms import ProjectRequestForm
+from .workflows import WORKFLOWS
 
 
 @require_safe
-def services(request, *, static_export=False):
-    return render(request, "services.html", {
-        "packages": PACKAGES,
+def services(request):
+    return render(request, "services.html", {"packages": PACKAGES})
+
+
+@require_safe
+def package_detail(request, slug, *, static_export=False):
+    package = PACKAGE_BY_SLUG.get(slug)
+    if package is None:
+        raise Http404("Package not found.")
+    workflow = WORKFLOWS[slug]
+    language = int(get_language() == "ja")
+    booking_url = google_booking_url(settings.BARA_GOOGLE_BOOKING_URL)
+    return render(request, "package_detail.html", {
+        "package": package,
+        "description": workflow.description[language],
+        "steps": [(step.title[language], step.description[language]) for step in workflow.steps],
         "static_export": static_export,
+        "consultation_week": consultation_week(language == 1),
+        "booking_url": booking_url,
+        "booking_embed_url": google_booking_embed_url(booking_url),
     })
 
 
