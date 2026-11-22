@@ -7,3 +7,7 @@ def home(request):
     return render(request, "index.html", {
         "portrait": portrait_path if finders.find(portrait_path) else None,
     })
+
+
+def privacy(request):
+    return render(request, "privacy.html")

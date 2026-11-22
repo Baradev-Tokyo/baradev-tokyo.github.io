@@ -8,7 +8,7 @@ from xml.etree.ElementTree import parse
 ROOT = Path(__file__).resolve().parents[1] / "dist"
 ORIGIN = "https://baradev-tokyo.github.io"
 LANGUAGES = {"": "en", "ja/": "ja"}
-PAGES = ("", "services/", "about/", "contact/")
+PAGES = ("", "services/", "about/", "contact/", "privacy/")
 
 
 class Page(HTMLParser):

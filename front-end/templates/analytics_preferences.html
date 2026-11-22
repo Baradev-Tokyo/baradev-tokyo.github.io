@@ -1,17 +1,22 @@
 {% load i18n %}
 {% get_current_language as current_language %}
-<section class="bara-wrap bara-analytics" aria-label="{% if current_language == 'ja' %}アクセス解析の設定{% else %}Analytics preferences{% endif %}">
-  <details id="analytics-preferences" hidden>
-    {% if current_language == 'ja' %}
-    <summary>アクセス解析の設定</summary>
-    <p>同意いただいた場合、Google Analyticsでページの閲覧やリンクのクリックを計測します。メールの本文やフォームへの入力内容は送信しません。設定はこのブラウザでいつでも変更できます。</p>
-    <button type="button" data-analytics-choice="allow">許可する</button>
-    <button type="button" data-analytics-choice="deny">許可しない</button>
-    {% else %}
-    <summary>Analytics preferences</summary>
-    <p>If you allow analytics, Bara uses Google Analytics to measure page views and link clicks. Email contents and form entries are excluded. You can change your choice on this browser at any time.</p>
-    <button type="button" data-analytics-choice="allow">Allow analytics</button>
-    <button type="button" data-analytics-choice="deny">Decline</button>
-    {% endif %}
-  </details>
-</section>
+{% url 'privacy' as privacy_url %}
+<dialog id="analytics-preferences" class="bara-consent" aria-labelledby="analytics-title" aria-describedby="analytics-description"{% if request.path == privacy_url %} data-skip-prompt{% endif %}>
+  {% if current_language == 'ja' %}
+  <h2 id="analytics-title">Cookieとアクセス解析の設定</h2>
+  <p id="analytics-description">設定を記憶するためにブラウザの保存機能を使います。同意いただいた場合にのみ、Google Analyticsでページの閲覧やリンクのクリックを計測します。</p>
+  <p><a href="{% url 'privacy' %}">プライバシーポリシー</a></p>
+  <div class="bara-consent-actions">
+    <button type="button" class="bara-button bara-consent-secondary" data-analytics-choice="deny">必要なもののみ</button>
+    <button type="button" class="bara-button" data-analytics-choice="allow">すべて許可</button>
+  </div>
+  {% else %}
+  <h2 id="analytics-title">Cookie and analytics preferences</h2>
+  <p id="analytics-description">We use browser storage to remember your choice. If you allow analytics, Google Analytics measures page views and selected link clicks.</p>
+  <p><a href="{% url 'privacy' %}">Privacy policy</a></p>
+  <div class="bara-consent-actions">
+    <button type="button" class="bara-button bara-consent-secondary" data-analytics-choice="deny">Necessary only</button>
+    <button type="button" class="bara-button" data-analytics-choice="allow">Allow all</button>
+  </div>
+  {% endif %}
+</dialog>

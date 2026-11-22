@@ -1,6 +1,7 @@
 (() => {
   const measurementId = document.currentScript.dataset.measurementId;
   const preferences = document.getElementById("analytics-preferences");
+  const settingsButton = document.getElementById("open-analytics-preferences");
   const canonical = document.querySelector('link[rel="canonical"]').href;
   const storageKey = "bara.analytics";
   let choice;
@@ -47,23 +48,34 @@
     start();
   }
 
-  preferences.hidden = false;
   try {
     showChoice(localStorage.getItem(storageKey));
   } catch {
     showChoice(null);
   }
-  preferences.open = !choice;
+  settingsButton.hidden = false;
+  settingsButton.addEventListener("click", () => preferences.showModal());
+  if (!choice && !preferences.hasAttribute("data-skip-prompt")) preferences.showModal();
 
-  preferences.addEventListener("click", (event) => {
-    const value = event.target.dataset.analyticsChoice;
-    if (!value) return;
+  function saveChoice(value) {
     try {
       localStorage.setItem(storageKey, value);
     } catch {
       // Keep the choice for this page when browser storage is unavailable.
     }
     showChoice(value);
+    preferences.close();
+  }
+
+  preferences.addEventListener("click", (event) => {
+    const value = event.target.dataset.analyticsChoice;
+    if (value) saveChoice(value);
+  });
+
+  preferences.addEventListener("cancel", (event) => {
+    if (choice) return;
+    event.preventDefault();
+    saveChoice("deny");
   });
 
   document.addEventListener("click", (event) => {

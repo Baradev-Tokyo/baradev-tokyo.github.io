@@ -26,7 +26,7 @@ from django.urls import reverse, translate_url
 from django.utils.translation import gettext, override
 
 from about.views import about
-from home.views import home
+from home.views import home, privacy
 from services.catalog import PACKAGES
 from services.views import services
 
@@ -41,6 +41,8 @@ DESCRIPTIONS = {
               "Pedal Somewhereの予約サイト、レシート入力の自動化、非公開ファイル共有など、Baraの制作事例をご紹介します。"),
     "contact": ("Email Bara to discuss a freelance software or website project, including your goals, preferred package, and timing.",
                 "Webサイト制作や業務ツール開発のご相談はBaraへ。ご希望のサービス、目的、希望時期をメールでお知らせください。"),
+    "privacy": ("Read how Bara handles project inquiries, website analytics, and cookie preferences.",
+                "Baraのお問い合わせ情報、アクセス解析、Cookie設定の取り扱いをご案内します。"),
 }
 
 
@@ -78,6 +80,7 @@ def export():
                 for route, view in (
                     ("home", home), ("services", partial(services, static_export=True)),
                     ("about", about), ("contact", contact),
+                    ("privacy", privacy),
                 ):
                     path = reverse(route)
                     request = HttpRequest()

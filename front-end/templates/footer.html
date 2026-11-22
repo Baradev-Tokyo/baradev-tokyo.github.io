@@ -1,4 +1,5 @@
 {% load i18n %}
+{% get_current_language as footer_language %}
 <footer class="bara-footer">
   <div class="bara-wrap bara-nav">
     <a class="bara-brand" href="{% url 'home' %}">Bara<span>.</span></a>
@@ -7,5 +8,11 @@
       <a href="mailto:baradev.tokyo@gmail.com" data-analytics-event="email_click">baradev.tokyo@gmail.com</a>
     </div>
     <a href="https://github.com/ByteBard0727">GitHub</a>
+    <div class="bara-footer-contact">
+      <a href="{% url 'privacy' %}">{% if footer_language == 'ja' %}プライバシーポリシー{% else %}Privacy policy{% endif %}</a>
+      {% if request.site_metadata.measurement_id %}
+      <button type="button" id="open-analytics-preferences" hidden>{% if footer_language == 'ja' %}Cookie設定{% else %}Cookie settings{% endif %}</button>
+      {% endif %}
+    </div>
   </div>
 </footer>
