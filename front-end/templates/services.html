@@ -13,7 +13,7 @@
       <p>{% translate package.summary %}</p>
       <p class="bara-price">{{ package.estimate }}</p>
       <ul>{% for item in package.scope %}<li>{% translate item %}</li>{% endfor %}</ul>
-      <a class="bara-button" href="{% url 'contact' %}{% if static_export %}#{{ package.slug }}{% else %}?package={{ package.slug }}{% endif %}">{% translate package.name as package_name %}{% blocktranslate with package=package_name %}Choose {{ package }}{% endblocktranslate %}</a>
+      <a class="bara-button" href="{% url 'contact' %}{% if static_export %}#{{ package.slug }}{% else %}?package={{ package.slug }}{% endif %}" data-analytics-event="package_click" data-package="{{ package.slug }}">{% translate package.name as package_name %}{% blocktranslate with package=package_name %}Choose {{ package }}{% endblocktranslate %}</a>
     </article>
     {% endfor %}
   </div>

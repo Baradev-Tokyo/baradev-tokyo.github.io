@@ -1,0 +1,17 @@
+{% load i18n %}
+{% get_current_language as current_language %}
+<section class="bara-wrap bara-analytics" aria-label="{% if current_language == 'ja' %}アクセス解析の設定{% else %}Analytics preferences{% endif %}">
+  <details id="analytics-preferences" hidden>
+    {% if current_language == 'ja' %}
+    <summary>アクセス解析の設定</summary>
+    <p>同意いただいた場合、Google Analyticsでページの閲覧やリンクのクリックを計測します。メールの本文やフォームへの入力内容は送信しません。設定はこのブラウザでいつでも変更できます。</p>
+    <button type="button" data-analytics-choice="allow">許可する</button>
+    <button type="button" data-analytics-choice="deny">許可しない</button>
+    {% else %}
+    <summary>Analytics preferences</summary>
+    <p>If you allow analytics, Bara uses Google Analytics to measure page views and link clicks. Email contents and form entries are excluded. You can change your choice on this browser at any time.</p>
+    <button type="button" data-analytics-choice="allow">Allow analytics</button>
+    <button type="button" data-analytics-choice="deny">Decline</button>
+    {% endif %}
+  </details>
+</section>

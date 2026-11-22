@@ -7,7 +7,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% translate "Bara | Freelance Software Engineering & Development" %}{% endblock %}</title>
+  {% with seo=request.site_metadata %}
+  {% if seo %}
+  <meta name="description" content="{{ seo.description }}">
+  <link rel="canonical" href="{{ seo.canonical }}">
+  <link rel="alternate" hreflang="en" href="{{ seo.english }}">
+  <link rel="alternate" hreflang="ja" href="{{ seo.japanese }}">
+  <link rel="alternate" hreflang="x-default" href="{{ seo.english }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bara">
+  <meta property="og:url" content="{{ seo.canonical }}">
+  <meta property="og:description" content="{{ seo.description }}">
+  {% if seo.verification %}<meta name="google-site-verification" content="{{ seo.verification }}">{% endif %}
+  {% if seo.measurement_id %}
+  <script defer src="{% static 'analytics.js' %}" data-measurement-id="{{ seo.measurement_id }}"></script>
+  {% endif %}
+  {% else %}
   <meta name="description" content="{% translate "Freelance websites, dashboards and workflow automation for small teams." %}">
+  {% endif %}
+  {% endwith %}
   <meta name="theme-color" content="#0D2036">
   <link rel="stylesheet" href="{% static 'main.css' %}">
 </head>
@@ -16,5 +34,6 @@
   {% include "navbar.html" %}
   <main id="main">{% block content %}{% endblock %}</main>
   {% include "footer.html" %}
+  {% if request.site_metadata.measurement_id %}{% include "analytics_preferences.html" %}{% endif %}
 </body>
 </html>

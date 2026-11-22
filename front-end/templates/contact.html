@@ -10,7 +10,7 @@
     <p>{% translate "Email Bara to discuss your goals, preferred timing, and the package you’re interested in." %}</p>
     <ul class="bara-email-packages">
       {% for slug, name, url in email_packages %}
-      <li id="{{ slug }}"><a href="{{ url }}">{{ name }}</a></li>
+      <li id="{{ slug }}"><a href="{{ url }}" data-analytics-event="email_click" data-package="{{ slug }}">{{ name }}</a></li>
       {% endfor %}
     </ul>
     {% else %}

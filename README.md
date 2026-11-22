@@ -41,6 +41,16 @@ Future pushes to the business repository’s `main` build and validate `dist/`, 
 
 The public export uses email for inquiries. The original Django site still saves submissions, creates proposal drafts, and generates private agreement drafts in admin. Keep it local for ¥0 hosting costs. An online version would need separate HTTPS-capable Python hosting, persistent storage, and production settings for the Django secret, allowed hosts, and secure cookies. One low-traffic option to evaluate is Render free compute with a separate durable PostgreSQL provider such as Neon. Render’s free filesystem is ephemeral, and Render’s own free PostgreSQL expires after 30 days. That setup requires a database configuration change and depends on both providers’ quotas. [Render free limits](https://render.com/docs/free) · [Neon free plan](https://neon.com/pricing)
 
+## Private analytics and search reporting
+
+1. Sign in to [Google Analytics](https://analytics.google.com/) with `baradev.tokyo@gmail.com`. Create a GA4 property and a **Web** data stream for `https://baradev-tokyo.github.io`. In property and account access management, give access only to the owner account. Leave advertising integrations and enhanced measurement off. The site sends its own page views and selected clicks.
+2. Copy the web stream’s public `G-…` measurement ID into the repository’s **Settings → Secrets and variables → Actions → Variables** as `BARA_GA_MEASUREMENT_ID`. Run **Publish Bara portfolio** on `main`. When the variable is blank, the build omits analytics entirely.
+3. Open the rebuilt site, allow analytics in the footer, and check the GA4 Realtime report. Try a package link and an email link. `package_click`, `email_click`, and `portfolio_click` measure intent. An email click does not establish that a message was sent. Reports cover visitors who allow analytics and whose browsers permit it.
+4. In **Admin → Custom definitions**, add event-scoped dimensions for `site_language` and `package_slug`. Use **Reports → Acquisition** for sources and campaigns, **Pages and screens** for readership, and **Events** for package and contact interest. Tag marketing links consistently with `utm_source`, `utm_medium`, and `utm_campaign`. Use short identifiers such as `instagram`, `social`, and `launch`. Keep personal information out of campaign tags.
+5. Export reports to CSV for spreadsheets, or use the [GA4 Data API](https://developers.google.com/analytics/devguides/reporting/data/v1) for authenticated integrations. [BigQuery export](https://support.google.com/analytics/answer/9358801) is available if raw events become necessary. Review its quotas and billing before enabling it. Keep API credentials and exports outside this public repository.
+
+In [Search Console](https://search.google.com/search-console/), add a **URL prefix** property for `https://baradev-tokyo.github.io/` and select **HTML tag** verification. Copy only the tag’s `content` value to the Actions variable `BARA_GOOGLE_SITE_VERIFICATION`. Run the Pages workflow, verify ownership in Search Console, and submit `https://baradev-tokyo.github.io/sitemap.xml`. Search Console adds search impressions, clicks, and indexing reports alongside GA4’s on-site activity.
+
 ## Run locally
 
 Use Python 3.11+ and run these commands from the repository root in PowerShell.

@@ -635,6 +635,10 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
 .bara-header a:hover, .bara-header a[aria-current="page"] { text-decoration: underline; text-underline-offset: .35em; text-decoration-color: var(--line-blue); }
 .bara-header a:focus-visible { outline-color: var(--line-blue); }
 .bara-footer { background: var(--ink-900); }
+.bara-analytics details { margin-block: 1rem; font-size: .9rem; }
+.bara-analytics summary { cursor: pointer; }
+.bara-analytics button { font: inherit; padding: .35rem .7rem; }
+.bara-analytics button[aria-pressed="true"] { background: var(--ink-900); color: var(--text-inverse); }
 .bara-footer-contact { display: flex; flex-wrap: wrap; gap: .3rem .85rem; color: var(--text-inverse-muted); }
 .bara-footer-contact a { text-decoration: underline; text-underline-offset: .2em; }
 .bara-language { padding-inline-start: .85rem; border-inline-start: 1px solid var(--line-blue); }
