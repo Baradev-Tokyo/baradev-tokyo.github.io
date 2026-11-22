@@ -1,6 +1,9 @@
 from django.urls import path
-from . import views
+from django.views.generic import RedirectView
+
+from .views import about
 
 urlpatterns = [
-    path('about', views.about, name='about'),
+    path("", about, name="about"),
+    path("about", RedirectView.as_view(pattern_name="about")),
 ]

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Request received | Bara" %}{% endblock %}
+
+{% block content %}
+<section class="bara-wrap bara-section">
+  <h1>{% translate "Request received" %}</h1>
+  <p>{% translate "I’ll review your brief and follow up at the email address you provided." %}</p>
+  <a href="{% url 'services' %}">{% translate "Back to packages" %}</a>
+</section>
+{% endblock %}

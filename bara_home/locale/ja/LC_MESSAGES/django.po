@@ -1,0 +1,308 @@
+msgid ""
+msgstr "Project-Id-Version: Bara\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Freelance websites, dashboards and workflow automation for small teams."
+msgstr "小規模事業者やチーム向けに、Webサイト制作、ダッシュボード開発、業務自動化を行います。"
+
+msgid "Skip to content"
+msgstr "本文へ移動"
+
+msgid "Main navigation"
+msgstr "メインナビゲーション"
+
+msgid "Packages"
+msgstr "サービス・料金"
+
+msgid "Work"
+msgstr "制作実績"
+
+msgid "Start a project"
+msgstr "制作のご相談"
+
+msgid "Contact"
+msgstr "お問い合わせ"
+
+msgid "Websites and tools for small teams"
+msgstr "小さなチームのためのWebサイトと業務ツール"
+
+msgid "Give customers a place to book, bring your reporting into one dashboard, or automate a process that takes up your week."
+msgstr "お客様がオンラインで予約できるサイトから、情報を一か所にまとめるダッシュボード、日々の作業を減らす自動化まで。"
+
+msgid "Explore packages"
+msgstr "サービス・料金を見る"
+
+msgid "Hi, I’m Joey, the developer behind Bara."
+msgstr "はじめまして。Baraの開発を担当するジョーイです。"
+
+msgid "I work with small businesses that need a website or a tool that fits how they already work. That might mean letting customers book and pay online, keeping a spreadsheet while automating the data entry, or giving a team one place to see what needs attention."
+msgstr "小規模事業者の皆さまに向けて、今の仕事の進め方に合ったWebサイトや業務ツールを作っています。オンライン予約と決済の導入、既存のスプレッドシートへの入力の自動化、チームで対応状況を確認できる画面の開発などに対応します。"
+
+msgid "You work directly with me from the first conversation through launch and handoff."
+msgstr "最初のご相談から公開・納品まで、私が直接対応します。"
+
+msgid "Joey, the developer behind Bara"
+msgstr "Baraの開発者、ジョーイ"
+
+msgid "From project brief to proposal"
+msgstr "ご相談からご提案まで"
+
+msgid "Choose a package"
+msgstr "サービスを選ぶ"
+
+msgid "Compare what’s included and see the estimated cost."
+msgstr "サービス内容と費用の目安をご確認ください。"
+
+msgid "Compare packages"
+msgstr "サービスを比較する"
+
+msgid "Share your project brief"
+msgstr "ご希望を伝える"
+
+msgid "Tell me what you want to accomplish, what you already use, and when you’d like to launch."
+msgstr "実現したいこと、現在お使いのツール、公開希望時期などをお聞かせください。"
+
+msgid "Review your proposal"
+msgstr "提案内容を確認する"
+
+msgid "We confirm the deliverables, milestones, and fee before moving to an agreement."
+msgstr "制作範囲、スケジュール、費用をご確認いただいたうえで、契約に進みます。"
+
+msgid "See what Bara has built"
+msgstr "Baraの制作事例"
+
+msgid "A live booking and payment flow for guided cycling tours in Tokyo."
+msgstr "東京のガイド付きサイクリングツアー向けに、オンライン予約と決済の仕組みを構築しました。"
+
+msgid "Read the booking case study"
+msgstr "予約サイトの事例を見る"
+
+msgid "Household finance"
+msgstr "家計管理ツール"
+
+msgid "Receipt capture and reporting built around an existing Google Sheets ledger."
+msgstr "既存のGoogle スプレッドシートを活用した、レシート入力と集計の仕組みです。"
+
+msgid "Read the automation case study"
+msgstr "業務自動化の事例を見る"
+
+msgid "Family file sharing"
+msgstr "家族向けファイル共有"
+
+msgid "Private shared spaces with a separate tool for monitoring storage nodes."
+msgstr "非公開の共有スペースと、ストレージの稼働状況を確認する独立した監視ツールです。"
+
+msgid "Read the file-sharing case study"
+msgstr "ファイル共有の事例を見る"
+
+msgid "Service packages | Bara"
+msgstr "サービス・料金 | Bara"
+
+msgid "Service packages"
+msgstr "サービス・料金"
+
+msgid "Prices are planning estimates in JPY. The proposal confirms scope, final fees, applicable taxes, and third-party costs."
+msgstr "表示金額は日本円での目安です。制作範囲、正式な費用、適用される税金、外部サービスの費用は、ご提案時にご案内します。"
+
+msgid "Choose %(package)s"
+msgstr "「%(package)s」を選ぶ"
+
+msgid "Start a project | Bara"
+msgstr "制作のご相談 | Bara"
+
+msgid "Tell me what you’d like to build. I’ll use your email to follow up about this request."
+msgstr "作りたいものや解決したい課題をお聞かせください。ご入力いただいたメールアドレスに、このご相談についてご連絡します。"
+
+msgid "(optional)"
+msgstr "（任意）"
+
+msgid "Send project request"
+msgstr "相談内容を送信する"
+
+msgid "Request received | Bara"
+msgstr "ご相談の受付完了 | Bara"
+
+msgid "Request received"
+msgstr "ご相談を受け付けました"
+
+msgid "I’ll review your brief and follow up at the email address you provided."
+msgstr "ご相談内容を確認し、ご入力いただいたメールアドレスへご連絡します。"
+
+msgid "Back to packages"
+msgstr "サービス・料金に戻る"
+
+msgid "Selected work | Bara"
+msgstr "制作実績 | Bara"
+
+msgid "Selected work"
+msgstr "制作実績"
+
+msgid "See how I’ve built booking flows, automated data entry, and given small groups a place to work with private data."
+msgstr "オンライン予約、データ入力の自動化、アクセス権限付きのファイル共有などの制作事例をご紹介します。"
+
+msgid "A live website for a Tokyo cycling tour business. Visitors can choose a tour, pick a date and timeslot, enter their group size, and pay through Stripe checkout."
+msgstr "東京でサイクリングツアーを提供する事業者のWebサイトです。ツアー、日付、時間帯、参加人数を選び、Stripeで決済できます。"
+
+msgid "The project also included automated email responses and help setting up the business’s Google account."
+msgstr "メールの自動返信を実装し、事業用Googleアカウントの設定もサポートしました。"
+
+msgid "Visit the live site"
+msgstr "公開サイトを見る"
+
+msgid "Explore the business website package"
+msgstr "事業者向けWebサイトの詳細を見る"
+
+msgid "Receipt processing and reporting"
+msgstr "レシート入力と集計の自動化"
+
+msgid "The goal was to speed up receipt entry while keeping the existing Google Sheets ledger. A Django workflow extracts fields from uploaded receipts, lets users correct the results, and writes confirmed entries to the spreadsheet."
+msgstr "既存のGoogle スプレッドシートの家計簿を使いながら、レシート入力の手間を減らすことが目的でした。Djangoで、アップロードしたレシートから必要な項目を読み取り、利用者が内容を修正・確認したうえで、スプレッドシートに登録する仕組みを作りました。"
+
+msgid "A synchronized PostgreSQL copy powers the reporting dashboard. The receipt review step gives users a chance to correct amounts and categories before they reach the ledger."
+msgstr "同期したデータをPostgreSQLに保存し、ダッシュボードで集計結果を表示します。家計簿への登録前に、金額やカテゴリを確認・修正できます。"
+
+msgid "View the project on GitHub"
+msgstr "GitHubでプロジェクトを見る"
+
+msgid "Explore workflow automation"
+msgstr "業務自動化の詳細を見る"
+
+msgid "Explore dashboards"
+msgstr "ダッシュボードの詳細を見る"
+
+msgid "Family file sharing and monitoring"
+msgstr "家族向けファイル共有と稼働監視"
+
+msgid "A mobile-first file app lets family members share files and photos in private spaces with separate permissions. A separate Django health monitor checks the status of experimental storage nodes."
+msgstr "スマートフォンで使いやすいファイル共有アプリです。家族でファイルや写真を共有でき、スペースごとにアクセス権限を設定できます。別のDjangoアプリで、検証用ストレージの稼働状況を確認します。"
+
+msgid "The monitoring core was tested locally. The phone-based deployment is experimental."
+msgstr "監視の主要機能はローカル環境で検証済みです。スマートフォン上での運用は検証段階です。"
+
+msgid "Explore custom internal tools"
+msgstr "業務用Webアプリの詳細を見る"
+
+msgid "Calorie tracking prototype"
+msgstr "カロリー記録アプリの試作"
+
+msgid "A Flask prototype backed by a containerized SQL Server database."
+msgstr "コンテナ上のSQL Serverをデータベースに使った、Flask製の試作アプリです。"
+
+msgid "Service package"
+msgstr "ご希望のサービス"
+
+msgid "What would you like to build?"
+msgstr "ご相談内容"
+
+msgid "Target launch date"
+msgstr "公開希望日"
+
+msgid "Name"
+msgstr "お名前"
+
+msgid "Company"
+msgstr "会社名・屋号"
+
+msgid "Email"
+msgstr "メールアドレス"
+
+msgid "Japanese / English website"
+msgstr "日英対応Webサイト"
+
+msgid "Landing page"
+msgstr "ランディングページ"
+
+msgid "Small business website"
+msgstr "事業者向けWebサイト"
+
+msgid "Operations dashboard"
+msgstr "業務ダッシュボード"
+
+msgid "Workflow automation"
+msgstr "業務自動化"
+
+msgid "Custom internal tool"
+msgstr "業務用Webアプリ"
+
+msgid "Give one service, event, or campaign a clear place to send visitors."
+msgstr "サービス、イベント、キャンペーンなど、ひとつのテーマを紹介するページです。"
+
+msgid "One responsive page using supplied copy and images"
+msgstr "ご提供いただく原稿・画像を使った、スマートフォン対応の1ページ"
+
+msgid "One inquiry or booking link"
+msgstr "お問い合わせまたは予約へのリンク1か所"
+
+msgid "Basic search metadata and launch handoff"
+msgstr "検索向けの基本設定と公開時の引き継ぎ"
+
+msgid "Explain what you offer and help visitors take the next step."
+msgstr "事業やサービスを紹介し、お問い合わせや予約につなげるサイトです。"
+
+msgid "Up to five responsive pages"
+msgstr "スマートフォン対応のページを最大5ページ"
+
+msgid "One inquiry form or existing booking integration"
+msgstr "お問い合わせフォーム1件、または既存の予約サービスとの連携"
+
+msgid "Present the same offer to Japanese- and English-speaking customers."
+msgstr "日本語と英語の両方でサービスを紹介するサイトです。"
+
+msgid "One to five page layouts in two languages"
+msgstr "1〜5種類のページ構成を日本語・英語で制作"
+
+msgid "Language switching and localized metadata"
+msgstr "言語切り替えと各言語の検索向け設定"
+
+msgid "Implementation using supplied Japanese and English copy"
+msgstr "ご提供いただく日英の原稿を使用"
+
+msgid "See the numbers your team uses without assembling reports by hand."
+msgstr "毎回レポートを作る手間を省き、チームで必要な数字を確認できます。"
+
+msgid "One existing data source"
+msgstr "既存のデータソース1件と連携"
+
+msgid "Up to three charts and one filterable table"
+msgstr "グラフを最大3点と、絞り込み可能な表1点"
+
+msgid "Private access and handoff"
+msgstr "閲覧権限の設定と運用の引き継ぎ"
+
+msgid "Reduce manual copying between the tools your team already uses."
+msgstr "今お使いのツール間での転記作業を減らします。"
+
+msgid "One defined workflow using up to two systems"
+msgstr "最大2つのシステムを使う業務フロー1件"
+
+msgid "Validation and failure reporting"
+msgstr "入力チェックとエラー通知"
+
+msgid "Optional review step within the agreed scope"
+msgstr "合意した範囲内で確認ステップの追加が可能"
+
+msgid "Give a small team a dedicated app for a process it runs every week."
+msgstr "チームが繰り返し行う業務に合わせて専用アプリを作ります。"
+
+msgid "One core workflow with up to two roles"
+msgstr "主要な業務フロー1件、利用者権限は最大2種類"
+
+msgid "Django app with data entry and review screens"
+msgstr "入力・確認画面を備えたDjangoアプリ"
+
+msgid "Deployment handoff for one environment"
+msgstr "1つの環境への導入と運用の引き継ぎ"
+
+msgid "Bara | Freelance Software Engineering & Development"
+msgstr "Bara | フリーランスのソフトウェア開発"
+
+msgid "Freelance Software Engineering & Development · Tokyo, Japan"
+msgstr "フリーランスのソフトウェア開発｜東京"
+
+msgid "I specialize in Python, Django, backend development, web applications, and cloud solutions."
+msgstr "Python・Djangoを使ったバックエンド開発、Webアプリケーション開発、クラウド環境の構築を得意としています。"
+
+msgid "Email Bara to discuss your goals, preferred timing, and the package you’re interested in."
+msgstr "ご相談の際は、ご希望のサービス、実現したいこと、希望時期などをメールでお知らせください。"
+
+msgid "Project inquiry"
+msgstr "制作のご相談"
