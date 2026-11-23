@@ -21,6 +21,7 @@ django.setup()
 from django.contrib.staticfiles import finders
 from django.http import HttpRequest
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.urls import reverse, translate_url
 from django.utils.translation import gettext, override
 
@@ -28,12 +29,13 @@ from about.views import about
 from home.views import home, privacy
 from blog.posts import POSTS, localized_post
 from blog.views import blog, blog_details
+from content_queue.instagram_oauth import CALLBACK_PATH, LOCAL_CALLBACK_URI
 from services.catalog import PACKAGES, PACKAGE_BY_SLUG
 from services.briefs import package_briefs
 from services.views import package_detail, services
 from services.workflows import WORKFLOWS
 
-PUBLIC_ASSETS = ("main.css", "project-brief.js", "bara/joey.jpg")
+PUBLIC_ASSETS = ("main.css", "project-brief.js", "instagram-callback.js", "bara/joey.jpg")
 SITE_URL = "https://baradev-tokyo.github.io"
 TITLES = {
     "home": ("Tokyo Python & Django Developer | Bara Development", "東京のPython・Django開発 | Bara Development"),
@@ -134,6 +136,11 @@ def export():
                     target = staging / path.strip("/") / "index.html"
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(response.content)
+        callback = staging / CALLBACK_PATH.strip("/") / "index.html"
+        callback.parent.mkdir(parents=True, exist_ok=True)
+        callback.write_text(render_to_string("instagram_callback_relay.html", {
+            "local_callback": LOCAL_CALLBACK_URI,
+        }), encoding="utf-8")
         (staging / ".nojekyll").touch()
         (staging / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))
         (staging / "robots.txt").write_text(

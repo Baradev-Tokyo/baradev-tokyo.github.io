@@ -154,6 +154,15 @@ def check():
     sitemap_urls = {node.text for node in parse(ROOT / "sitemap.xml").iterfind(".//{*}loc")}
     if sitemap_urls != {ORIGIN + url for url in pages}:
         errors.append("Sitemap does not match the exported pages")
+    relay = ROOT / "oauth/instagram/callback/index.html"
+    if not relay.is_file() or not (ROOT / "static/instagram-callback.js").is_file():
+        errors.append("Missing Instagram authorization relay")
+    else:
+        rendered = Page(relay.read_text(encoding="utf-8"))
+        if (rendered.metadata.get("robots") != "noindex, nofollow"
+                or rendered.metadata.get("referrer") != "no-referrer"
+                or rendered.links != ["/static/instagram-callback.js"]):
+            errors.append("Unexpected Instagram relay metadata or external resources")
     if f"Sitemap: {ORIGIN}/sitemap.xml" not in (ROOT / "robots.txt").read_text():
         errors.append("robots.txt does not advertise the sitemap")
 

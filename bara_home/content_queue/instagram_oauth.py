@@ -11,7 +11,11 @@ from django.middleware.csrf import get_token
 from django.utils.html import format_html
 from django.views.decorators.http import require_http_methods, require_safe
 
-REDIRECT_URI = "https://127.0.0.1:8443/oauth/instagram/callback/"
+from blog.social import SITE
+
+CALLBACK_PATH = "/oauth/instagram/callback/"
+REDIRECT_URI = SITE + CALLBACK_PATH
+LOCAL_CALLBACK_URI = "https://127.0.0.1:8443" + CALLBACK_PATH
 SESSION_KEY = "bara_instagram_oauth"
 TOKEN_URL = "https://api.instagram.com/oauth/access_token"
 PROFILE_URL = "https://graph.instagram.com/me?fields=user_id%2Cusername"
