@@ -20,7 +20,9 @@ In Django admin, create or select the Workspace, add a contact, verify mailbox c
 
 Use `run_reporting --schedule-at 2026-11-03T09:00:00+09:00` to replay calendar evaluation for an older slot. The worker processes the latest closed eligible period on normal runs; replay each missing period after an outage spanning more than one cadence. Existing completed runs are not resent. An ambiguous live send after expiry needs provider-log reconciliation, then explicit owner action if replacement is warranted.
 
-## Cloud Run Job
+## Deferred Cloud Run Job
+
+The v0.5 zero-cost policy uses local execution and mock delivery. The steps below are for a future approved configuration only. Do not enable a billed cloud project or depend on a free-tier allowance to prevent charges.
 
 1. Approve the billing account, project, region, cost alert, data processor arrangements and retention. Configure encrypted PostgreSQL with backups and a restore test, separate runtime and migration roles, and TLS verification (`BARA_DB_SSLMODE=verify-full`, CA if needed via `PGSSLROOTCERT`). Apply migrations once via an authorized administrative task.
 2. Build the image from tracked sources with `docker build -f Dockerfile.reporting .`. Create a single-task Cloud Run Job with bounded task timeout and low platform retry count. Set entry parameters `--limit 25`. The job refuses SQLite. Store Django and database secrets in Secret Manager and grant the job identity access only to the specific secrets. Give Cloud Scheduler a separate identity with `roles/run.invoker` on this job only.

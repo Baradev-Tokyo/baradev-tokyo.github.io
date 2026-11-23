@@ -1,0 +1,44 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Bara operations</h1>
+<p><a href="{% url 'content_queue:calendar' %}{% if workspace %}?workspace={{ workspace.pk }}{% endif %}">Content calendar and publication queue</a></p>
+<p>Bara inbox: {{ inquiries }} website inquiries · {{ proposal_drafts }} proposal drafts.
+  <a href="{% url 'admin:services_projectrequest_changelist' %}">Review website inquiries</a></p>
+<p>Marketing reports: <a href="https://analytics.google.com/">GA4</a> · <a href="https://search.google.com/search-console/">Search Console</a></p>
+<form method="get">
+  <label for="workspace">Workspace</label>
+  <select id="workspace" name="workspace">
+    {% for option in workspaces %}<option value="{{ option.pk }}"{% if option.pk == workspace.pk %} selected{% endif %}>{{ option }}</option>{% endfor %}
+  </select>
+  <label for="month">Month</label>
+  <input type="month" name="month" id="month" value="{{ month }}">
+  <button type="submit">Apply</button>
+</form>
+{% if workspace %}
+<p>{{ direct_customers }} direct billing customers · {{ accepted }} accepted opportunities · {{ subscriptions }} active subscriptions · {{ open_invoices }} open invoices</p>
+<h2>Opportunities</h2>
+<p>Upwork results appear here after a zero-Connects cost has been verified.</p>
+<p><a href="{% url 'admin:acquisition_opportunity_add' %}?source=fiverr&amp;organization={{ workspace.pk }}">Record a Fiverr opportunity</a> ·
+  <a href="https://www.fiverr.com/inbox">Open Fiverr Inbox</a></p>
+<ul>{% for item, result in opportunities %}
+  <li>{{ item }} · <a href="{% url 'bara_job_review' workspace.pk item.pk %}">{% if item.proposal_approved_at %}View draft{% else %}Review and draft{% endif %}</a>
+      · {{ item.get_source_display }} {{ item.external_id }} · {{ result.recommendation }}
+      · {{ result.fit_score|default_if_none:"Unscored" }}
+      {% if item.url %} · <a href="{{ item.url }}">Original listing</a>{% endif %}</li>
+{% empty %}<li>No opportunities recorded.</li>{% endfor %}</ul>
+<h2>Marketplace listings</h2>
+<ul>{% for item in listings %}<li>{{ item.get_source_display }} {{ item.external_id }} · {{ item.service_slug }}
+{% if item.url %} · <a href="{{ item.url }}">Listing</a>{% endif %}</li>{% empty %}<li>No listings recorded.</li>{% endfor %}</ul>
+<h2>Marketplace orders this month</h2>
+<ul>{% for item in orders %}<li>{{ item.get_source_display }} {{ item.external_id }} · {{ item.currency }} {{ item.gross }}
+{% if item.order_url %} · <a href="{{ item.order_url }}">Order</a>{% endif %}</li>{% empty %}<li>No receipts recorded.</li>{% endfor %}</ul>
+<h2>Marketplace revenue and margin</h2>
+<ul>{% for row in marketplace %}<li>{{ row.source }} {{ row.currency }} · gross {{ row.gross_total }} · fees {{ row.fees }} · net {{ row.net }} · margin before tax and owner labor {{ row.margin|default_if_none:"Costs incomplete" }}</li>{% empty %}<li>No marketplace revenue recorded.</li>{% endfor %}</ul>
+<h2>Direct Stripe sandbox records</h2>
+<ul>{% for row in stripe_payments %}<li>{{ row.currency }} minor units · collected {{ row.collected }} · outstanding {{ row.outstanding }}</li>{% empty %}<li>No mapped Stripe receipts for this month.</li>{% endfor %}</ul>
+<h2>Hosting cost inputs</h2>
+<ul>{% for row in hosting %}<li>{{ row.currency }} {{ row.net }} · {% if row.estimated %}Estimated{% else %}Finalized{% endif %}</li>{% empty %}<li>No costs imported.</li>{% endfor %}</ul>
+{% else %}
+<p>Create a workspace in Django admin to review scoped operations.</p>
+{% endif %}
+{% endblock %}

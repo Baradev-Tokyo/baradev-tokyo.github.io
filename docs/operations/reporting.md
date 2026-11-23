@@ -1,0 +1,5 @@
+# Reporting operations
+
+Use the [reporting runbook](../reporting-setup.md) for fixture previews, owner-verified recipients, archival retention and failed-job recovery. Start with the local Django command and a local scheduler if the host is already available. Daily, weekly and monthly reporting periods use the configuration timezone. Report delivery defaults to mock. The owner can inspect runs, email events and private report downloads in Django admin. A laptop sleep or shutdown delays optional runs; recover with the same scheduled period. Keep cloud jobs and live email disabled until approved under the strict cost policy.
+
+Use `python bara_home/manage.py preview_notice failed_payment --language ja --output dist-report-preview` to review bilingual transactional drafts. Receipts, payment failures, subscriptions, service notices, internal opportunity alerts and monthly summaries are preview-only until verified event mappings and approved policies are in place. Keep marketing opt-ins and suppression separate. No marketing transport is implemented.

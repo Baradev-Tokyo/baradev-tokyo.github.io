@@ -22,6 +22,8 @@ def closed_period(now, zone, frequency, delay_days):
     if timezone.is_naive(now):
         raise ValueError("Expected aware scheduler time.")
     local = now.astimezone(ZoneInfo(zone)).date() - timedelta(days=delay_days)
+    if frequency == "daily":
+        return local - timedelta(days=1), local
     if frequency == "weekly":
         end = local - timedelta(days=local.weekday())
         return end - timedelta(days=7), end

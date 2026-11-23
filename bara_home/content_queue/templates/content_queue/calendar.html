@@ -1,0 +1,153 @@
+{% extends "admin/base_site.html" %}
+{% load static tz %}
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .queue-controls,.queue-layout { display:flex; flex-wrap:wrap; gap:1rem; align-items:start; }
+  .queue-controls form { margin: .25rem 0; }
+  .queue-controls label { display:inline-flex; gap:.35rem; align-items:center; margin:.25rem; }
+  .queue-layout > section { flex:1 1 25rem; min-width:0; }
+  .queue-card,.queue-day { border:1px solid var(--hairline-color); padding:.75rem; min-width:0; }
+  .queue-calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:.25rem; }
+  .queue-day { min-height:4.5rem; overflow-wrap:anywhere; }
+  .queue-day ul { margin:.35rem 0; padding-left:1rem; }
+  .queue-table { overflow:auto; }
+  .queue-text { white-space:pre-wrap; overflow-wrap:anywhere; font-family:inherit; }
+  .queue-image { display:block; max-width:min(100%,28rem); max-height:28rem; object-fit:contain; }
+  .queue-card textarea,.queue-card input:not([type=checkbox]),.queue-card select { max-width:100%; box-sizing:border-box; }
+  .queue-card form { margin:1rem 0; }
+  @media(max-width:900px) { .queue-calendar { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media(max-width:450px) { .queue-calendar { grid-template-columns:1fr; } }
+</style>
+{% endblock %}
+{% block content %}
+{% timezone "Asia/Tokyo" %}
+<p><a href="{% url 'bara_operations' %}{% if workspace %}?workspace={{ workspace.pk }}{% endif %}">Back to Bara Operations</a></p>
+<h1>Content calendar</h1>
+<p>All times are Asia/Tokyo. Publishing is in local mock mode.</p>
+{% if workspace %}
+<form method="get" class="queue-controls" aria-label="Calendar filters">
+  <label>Workspace <select name="workspace">{% for item in workspaces %}<option value="{{ item.pk }}"{% if item.pk == workspace.pk %} selected{% endif %}>{{ item.name }}</option>{% endfor %}</select></label>
+  <label>Platform <select name="platform"><option value="">All</option>{% for value,label in platforms %}<option value="{{ value }}"{% if filters.platform == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+  <label>Category <select name="category"><option value="">All</option>{% for category in categories %}<option{% if filters.category == category %} selected{% endif %}>{{ category }}</option>{% endfor %}</select></label>
+  <label>Status <select name="status"><option value="">All</option>{% for value,label in states %}<option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+  <label>Sort queue <select name="sort">
+    <option value="">Soonest</option><option value="latest"{% if filters.sort == "latest" %} selected{% endif %}>Latest</option>
+    <option value="platform"{% if filters.sort == "platform" %} selected{% endif %}>Platform</option>
+    <option value="category"{% if filters.sort == "category" %} selected{% endif %}>Category</option>
+    <option value="status"{% if filters.sort == "status" %} selected{% endif %}>Status</option>
+  </select></label>
+  <input type="hidden" name="mode" value="{{ mode }}"><input type="hidden" name="date" value="{{ anchor|date:'Y-m-d' }}">
+  <button type="submit">Apply</button>
+</form>
+<div class="queue-controls">
+  {% for value,label,paused in channels %}
+  <form method="post" action="?workspace={{ workspace.pk }}">{% csrf_token %}
+    <input type="hidden" name="action" value="channel"><input type="hidden" name="platform" value="{{ value }}">
+    <input type="hidden" name="paused" value="{% if paused %}0{% else %}1{% endif %}">
+    <button type="submit">{% if paused %}Resume{% else %}Pause{% endif %} {{ label }}</button>
+  </form>
+  {% endfor %}
+</div>
+<details class="queue-card">
+  <summary>Queue replenishment</summary>
+  <form method="post" action="?workspace={{ workspace.pk }}">{% csrf_token %}
+    <input type="hidden" name="action" value="policy">
+    <p><label><input type="checkbox" name="enabled"{% if policy.enabled %} checked{% endif %}> Enable automatic replenishment</label></p>
+    <p><label><input type="checkbox" name="generation"{% if policy.generation_enabled %} checked{% endif %}> Generate article-based drafts when approved drafts run out</label></p>
+    <p><label>Horizon in calendar days <input type="number" min="1" max="60" name="horizon" value="{{ policy.horizon_days }}" required></label></p>
+    <button type="submit">Save policy</button>
+  </form>
+  <form method="post" action="?workspace={{ workspace.pk }}">{% csrf_token %}
+    <button name="action" value="replenish">Check for empty slots now</button>
+  </form>
+</details>
+<nav class="queue-controls" aria-label="Calendar navigation">
+  <a href="?{{ query }}&amp;mode={{ mode }}&amp;date={{ previous|date:'Y-m-d' }}">Previous</a>
+  <a href="?{{ query }}&amp;mode=week&amp;date={{ anchor|date:'Y-m-d' }}"{% if mode == "week" %} aria-current="page"{% endif %}>Week</a>
+  <a href="?{{ query }}&amp;mode=month&amp;date={{ anchor|date:'Y-m-d' }}"{% if mode == "month" %} aria-current="page"{% endif %}>Month</a>
+  <a href="?{{ query }}&amp;mode={{ mode }}&amp;date={{ following|date:'Y-m-d' }}">Next</a>
+</nav>
+<h2>{{ anchor|date:"F Y" }} calendar</h2>
+<div class="queue-calendar">
+  {% for week in weeks %}{% for day,entries in week %}
+  <div class="queue-day">
+    <strong>{{ day|date:"D j M" }}</strong>
+    {% if entries %}<ul>{% for entry in entries %}
+    <li><a href="?{{ query }}&amp;mode={{ mode }}&amp;date={{ anchor|date:'Y-m-d' }}&amp;job={{ entry.pk }}#preview">{{ entry.scheduled_at|date:"H:i" }} {{ entry.get_platform_display }} · {{ entry.draft }}</a></li>
+    {% endfor %}</ul>{% endif %}
+  </div>
+  {% endfor %}{% endfor %}
+</div>
+<div class="queue-layout">
+  <section>
+    <h2>Upcoming publications</h2>
+    <div class="queue-table">
+    <table>
+      <thead><tr><th scope="col">Tokyo time</th><th scope="col">Platform</th><th scope="col">Publication</th><th scope="col">Status</th></tr></thead>
+      <tbody>{% for entry in upcoming %}
+      <tr><td>{{ entry.scheduled_at|date:"M j H:i" }}</td><td>{{ entry.get_platform_display }}</td>
+      <td><a href="?{{ query }}&amp;mode={{ mode }}&amp;date={{ anchor|date:'Y-m-d' }}&amp;job={{ entry.pk }}#preview">{{ entry.draft }}</a><br>{{ entry.draft.category }}</td>
+      <td>{{ entry.get_state_display }}{% if entry.retry_at %}<br>Retry {{ entry.retry_at|date:"M j H:i" }}{% endif %}</td></tr>
+      {% empty %}<tr><td colspan="4">No matching publications.</td></tr>{% endfor %}</tbody>
+    </table>
+    </div>
+  </section>
+  <section id="preview" class="queue-card">
+    <h2>Publication preview</h2>
+    {% if job %}
+    <p>{{ job.get_platform_display }} · {{ job.get_state_display }} · {{ job.scheduled_at|date:"Y-m-d H:i" }}</p>
+    {% include "content_queue/draft_content.html" with item=job.draft %}
+    {% if job.last_error %}<p class="errornote">{{ job.last_error }}</p>{% endif %}
+    {% if job.external_reference %}<p>Publication reference {{ job.external_reference }}</p>{% endif %}
+    {% if job.dispatch_started and job.state == "publishing" %}<p>The publisher has started the request. Cancellation can no longer be guaranteed.</p>{% endif %}
+    {% if mutable %}
+    {% include "content_queue/job_controls.html" %}
+    {% endif %}
+    <details><summary>Revision and attempt history</summary>
+      <ul>{% for revision in revisions %}<li>{{ revision.created_at|date:"Y-m-d H:i" }} · {{ revision.action }} · {{ revision.actor|default:"Worker" }} · {{ revision.scheduled_at|date:"Y-m-d H:i" }}
+        <details><summary>Text and media</summary>{% include "content_queue/draft_content.html" with item=revision.draft %}</details></li>{% endfor %}</ul>
+      <ul>{% for attempt in attempts %}<li>{{ attempt.started_at|date:"Y-m-d H:i" }} · {{ attempt.outcome }}</li>{% endfor %}</ul>
+    </details>
+    {% else %}<p>Choose a publication from the calendar or list.</p>{% endif %}
+  </section>
+</div>
+<div class="queue-layout">
+  <section class="queue-card" id="drafts">
+    <h2>Unpublished drafts</h2>
+    <ul>{% for draft in drafts %}<li><a href="?workspace={{ workspace.pk }}{% if job %}&amp;job={{ job.pk }}{% endif %}&amp;draft={{ draft.pk }}#drafts">{{ draft }}</a> · {{ draft.get_platform_display }} · {{ draft.get_state_display }}</li>
+    {% empty %}<li>No available drafts.</li>{% endfor %}</ul>
+    {% if draft_preview %}
+    {% include "content_queue/draft_content.html" with item=draft_preview %}
+    <form method="post">{% csrf_token %}
+      <input type="hidden" name="draft" value="{{ draft_preview.pk }}">
+      {% if draft_preview.state == "validated" %}
+      <p><label>Schedule in Tokyo <input type="datetime-local" name="scheduled_at" required></label></p>
+      {% if job %}<p><label><input type="checkbox" name="campaign" value="{{ job.campaign }}"> Add to selected publication’s campaign</label></p>{% endif %}
+      <button name="action" value="schedule">Schedule draft</button>
+      {% else %}<button name="action" value="approve">Approve exact text and media</button>{% endif %}
+    </form>
+    {% endif %}
+    <details><summary>Create draft</summary>
+      <form method="post">{% csrf_token %}
+        <p><label>Platform <select name="platform">{% for value,label in platforms %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label></p>
+        {% include "content_queue/draft_fields.html" %}
+        <button name="action" value="new">Save for approval</button>
+      </form>
+    </details>
+  </section>
+  <section class="queue-card">
+    <h2>Publication history</h2>
+    <ul>{% for entry in history %}
+    <li><a href="?{{ query }}&amp;job={{ entry.pk }}#preview">{{ entry.draft }}</a> · {{ entry.get_platform_display }} · {{ entry.get_state_display }}
+      {% if entry.replace_requested %} · Replacement requested{% endif %}
+      {% if entry.last_error %} · {{ entry.last_error }}{% endif %}</li>
+    {% empty %}<li>No past publications.</li>{% endfor %}</ul>
+    <details><summary>Workspace activity</summary>
+      <ul>{% for event in audits %}<li>{{ event.created_at|date:"Y-m-d H:i" }} · {{ event.actor|default:"Worker" }} · {{ event.action }}</li>{% endfor %}</ul>
+    </details>
+  </section>
+</div>
+{% else %}<p>Create a workspace in Bara Operations to get started.</p>{% endif %}
+{% endtimezone %}
+{% endblock %}

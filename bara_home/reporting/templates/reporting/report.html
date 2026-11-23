@@ -5,9 +5,9 @@
   <h1>{{ title }}</h1>
   <p>{{ period }}</p>
   {% if introduction %}<p>{{ introduction|linebreaksbr }}</p>{% endif %}
-  <table border="1" cellpadding="7" style="border-collapse:collapse;color:#112942">
+  {% if rows %}<table border="1" cellpadding="7" style="border-collapse:collapse;color:#112942">
     <tbody>{% for label, amount in rows %}<tr><th scope="row" align="left">{{ label }}</th><td>{{ amount }}</td></tr>{% endfor %}</tbody>
-  </table>
+  </table>{% endif %}
   <p>{{ note }}</p>
 </body>
 </html>

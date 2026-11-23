@@ -69,4 +69,10 @@
     </article>
   </div>
 </section>
+{% get_current_language as language %}
+<section class="bara-wrap bara-section" aria-labelledby="updates-title">
+  <h2 id="updates-title">{% if language == "ja" %}Baraブログ{% else %}Bara blog{% endif %}</h2>
+  {% include "bara-post-card.html" with post=latest_post %}
+  <p><a href="{% url 'blog' %}">{% if language == "ja" %}ブログ一覧{% else %}All posts{% endif %}</a></p>
+</section>
 {% endblock %}

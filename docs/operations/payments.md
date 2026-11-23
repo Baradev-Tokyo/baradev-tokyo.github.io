@@ -1,0 +1,5 @@
+# Payment operations
+
+Use the [Stripe Japan sandbox guide](../stripe-onboarding.md). Direct business only. Owner verification, bank and agreements are required before live activation. Test customer, prices and keys remain separate. Hosted Checkout keeps card data out of Bara. Reconcile from verified events and approved test invoice mappings. Record provider and marketplace fees as deductions from revenue, not as acquisition spend. See [Stripe Japan fees](https://stripe.com/jp/pricing).
+
+The sandbox uses the official Python SDK. For an approved test-only run, `python bara_home/manage.py stripe_test_link PRICE_ID REQUEST_ID` creates a single-completion test Payment Link with a stable request ID for immediate retries. Reuse the same ID only for the same test payload; inspect Stripe before retrying an old ambiguous request. This CLI does not automatically associate link payments with an order. Use owner-created Checkout orders for the reconciled path. [Stripe Payment Links API](https://docs.stripe.com/api/payment-link/create?lang=python)

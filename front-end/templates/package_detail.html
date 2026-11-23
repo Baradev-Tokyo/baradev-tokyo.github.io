@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% block title %}{% translate package.name %} | Bara{% endblock %}
 {% block content %}
 {% get_current_language as language %}
@@ -20,6 +21,16 @@
 
   {% if package.slug == 'business-site' %}
   <p><a href="{% url 'about' %}#pedal-somewhere">{% if language == 'ja' %}Pedal Somewhereの制作事例を見る{% else %}See the Pedal Somewhere case study{% endif %}</a></p>
+  {% endif %}
+  {% if static_export %}
+  <section data-brief-summary data-package="{{ package.slug }}" hidden>
+    <h2>{% if language == 'ja' %}ご記入内容{% else %}Your project brief{% endif %}</h2>
+    <p>{% if language == 'ja' %}必要に応じて、相談の前に概要をメールで共有してください。{% else %}Email your brief to Bara if you’d like to share it before booking.{% endif %}</p>
+    <ul data-brief-values></ul>
+    <p><a data-brief-email href="mailto:baradev.tokyo@gmail.com">{% if language == 'ja' %}概要をメールで送る{% else %}Email my brief{% endif %}</a> ·
+      <a href="{% url 'contact' %}#{{ package.slug }}">{% if language == 'ja' %}概要を編集する{% else %}Edit brief{% endif %}</a></p>
+  </section>
+  <script src="{% static 'project-brief.js' %}" defer></script>
   {% endif %}
   {% include "consultation.html" %}
 </section>

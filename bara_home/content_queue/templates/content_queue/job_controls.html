@@ -1,0 +1,46 @@
+{% load tz %}
+<form method="post">{% csrf_token %}{% include "content_queue/job_identity.html" %}
+  <label>New Tokyo time <input name="scheduled_at" type="datetime-local" value="{{ job.scheduled_at|localtime|date:'Y-m-d\TH:i' }}" required></label>
+  <button name="action" value="reschedule">Reschedule</button>
+</form>
+<details><summary>Replace this {{ job.get_platform_display }} post</summary>
+  <p>The scheduled time is preserved. While a replacement awaits approval, the current post remains scheduled.</p>
+  <form method="post">{% csrf_token %}{% include "content_queue/job_identity.html" %}
+    <label>Approved draft <select name="draft_{{ job.platform }}" required><option value="">Choose</option>
+      {% for option in replacements %}<option value="{{ option.pk }}">{{ option }}</option>{% endfor %}</select></label>
+    <button name="action" value="replace">Replace this post</button>
+  </form>
+  <details><summary>Edit a copy of the current draft</summary>
+    <form method="post">{% csrf_token %}{% include "content_queue/job_identity.html" %}
+      {% include "content_queue/draft_fields.html" with item=job.draft %}
+      <button name="action" value="edit">Save edited draft for approval</button>
+    </form>
+  </details>
+  <details><summary>Generate from a Bara article</summary>
+    <form method="post">{% csrf_token %}{% include "content_queue/job_identity.html" %}
+      <label>Article <select name="article">{% for slug in articles %}<option>{{ slug }}</option>{% endfor %}</select></label>
+      {% if job.platform == "instagram" %}<label>Bara media path <input name="media" value="{{ job.draft.media }}" required></label>{% endif %}
+      <button name="action" value="generate">Generate draft for approval</button>
+    </form>
+  </details>
+</details>
+{% if campaign_channels|length > 1 and campaign_mutable %}
+<details><summary>Replace entire campaign</summary>
+  <form method="post">{% csrf_token %}{% include "content_queue/job_identity.html" %}
+    <input type="hidden" name="scope" value="campaign">
+    {% for publication,options in campaign_channels %}
+    <p><label>{{ publication.get_platform_display }} <select name="draft_{{ publication.platform }}" required><option value="">Choose approved draft</option>
+      {% for option in options %}<option value="{{ option.pk }}">{{ option }}</option>{% endfor %}</select></label></p>
+    {% endfor %}
+    <p><label><input type="checkbox" name="confirm" value="yes" required> Replace every listed campaign post and keep its scheduled time</label></p>
+    <button name="action" value="replace">Replace entire campaign</button>
+  </form>
+</details>
+{% endif %}
+<details><summary>Cancel publication</summary>
+  <form method="post">{% csrf_token %}{% include "content_queue/job_identity.html" %}
+    <p><label><input name="confirm" type="checkbox" value="yes" required> Cancel this scheduled post</label></p>
+    <button name="action" value="cancel">Cancel and leave empty</button>
+    <button name="action" value="cancel_replace">Cancel and request replacement</button>
+  </form>
+</details>

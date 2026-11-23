@@ -1,0 +1,3 @@
+# ADR 0002 · Offline first and no new charges
+
+Use the existing public website as the package source and produce deterministic marketplace drafts offline. Keep unknown delivery, revision and USD pricing fields explicitly unresolved. Use offline scoring and manual intake, unless the owner separately authorizes a verified marketplace connector and the permitted capability. Marketplace money stays on its platform. Keep recurring product decisions provisional until validated in a pilot. Treat any external free tier with potential paid usage as disabled until cost guarantees and approvals are established.

@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<p><a href="{% url 'bara_operations' %}?workspace={{ job.organization_id }}">Back to opportunities</a></p>
+<h1>{{ job.title }}</h1>
+<p>{{ job.get_source_display }} · {{ job.external_id }}
+{% if job.url %} · <a href="{{ job.url }}">Original listing</a>{% endif %}</p>
+<p>Budget: {{ job.currency }} {{ job.budget_low|default_if_none:"Unspecified" }}{% if job.budget_high %}–{{ job.budget_high }}{% endif %}
+{% if job.source == "upwork" %} · Connects: {{ job.connects_required|default_if_none:"Unknown" }}{% endif %}</p>
+<p>{{ result.recommendation }} · Fit score: {{ result.fit_score|default_if_none:"Unscored" }}</p>
+<h2>Job description</h2>
+{{ job.description|default:"No description imported."|linebreaks }}
+{% if error %}<p class="errornote">{{ error }}</p>{% endif %}
+{% if job.proposal_approved_at %}
+<h2>Proposal draft</h2>
+<p>Saved locally on {{ job.proposal_approved_at }}.</p>
+<textarea rows="14" cols="80" readonly aria-label="Proposal draft">{{ job.proposal_draft }}</textarea>
+{% elif can_draft %}
+<form method="post">
+  {% csrf_token %}
+  <p><label for="focus">Optional proposed first step (complete the phrase “start by”)</label></p>
+  <textarea id="focus" name="focus" rows="3" cols="65" maxlength="500"></textarea>
+  <p><button type="submit">Draft proposal</button></p>
+</form>
+{% elif job.source == "upwork" and job.connects_required != 0 %}
+<p>Bara drafts Upwork proposals only when the listing is verified to require zero Connects.</p>
+{% else %}
+<p>Drafting requires a job description and an eligible opportunity.</p>
+{% endif %}
+{% endblock %}

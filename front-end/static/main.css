@@ -678,6 +678,40 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
 .bara-case, .bara-card[id] { scroll-margin-top: 1rem; }
 .bara-case:target { border-color: var(--line-blue); box-shadow: var(--shadow-sm); }
 .bara-form { max-width: 42rem; }
+.bara-brief-list, .bara-brief-form { display: grid; gap: 1rem; }
+.bara-brief-option > summary { cursor: pointer; font-weight: 700; }
+.bara-brief-form { margin-top: 1rem; }
+.bara-brief-form fieldset { min-width: 0; margin: 0; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); }
+.bara-brief-form legend { font-weight: 700; }
+.bara-brief-form button { justify-self: start; }
+.bara-brief-designs, .bara-brief-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: .75rem; }
+.bara-brief-design { padding: .85rem; border-top: .25rem solid var(--preview-accent); background: var(--preview-card); }
+.bara-brief-design.natural { --preview-accent: #52734e; --preview-card: #f3f3e8; --preview-page: #fcfaf2; --preview-ink: #4c583e; --preview-panel: #dde5ca; }
+.bara-brief-design.technology { --preview-accent: #79e1ff; --preview-card: #edf4ff; --preview-page: #101738; --preview-ink: #d6deff; --preview-panel: #35468a; }
+.bara-brief-design.professional { --preview-accent: #946021; --preview-card: #f8f2e9; --preview-page: #fffdf8; --preview-ink: #263651; --preview-panel: #e9dfd0; }
+.bara-design-preview { display: grid; gap: .6rem; padding: .7rem; margin-bottom: .75rem; min-height: 8rem; border-radius: .35rem; background: var(--preview-page); }
+.bara-design-preview-nav { display: flex; align-items: center; gap: .35rem; }
+.bara-design-preview-nav i { width: .65rem; height: .2rem; background: var(--preview-ink); }
+.bara-design-preview-nav i:first-child { width: 1.5rem; height: .35rem; margin-right: auto; background: var(--preview-accent); }
+.bara-design-preview-hero { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; gap: .5rem; }
+.bara-design-preview-hero > div:first-child { display: grid; align-content: center; gap: .25rem; }
+.bara-design-preview-hero i { width: 85%; height: .3rem; background: var(--preview-ink); }
+.bara-design-preview-hero i:nth-child(2) { width: 60%; }
+.bara-design-preview-hero i:last-child { width: 2rem; height: .55rem; margin-top: .2rem; background: var(--preview-accent); }
+.bara-design-preview-hero > div:last-child { min-height: 3rem; background: var(--preview-panel); }
+.natural .bara-design-preview-hero > div:last-child { border-radius: 45% 45% 8% 8%; }
+.technology .bara-design-preview-hero { grid-template-columns: 1fr 1.15fr; }
+.technology .bara-design-preview-hero > div:last-child { border: 1px solid var(--preview-accent); border-radius: .3rem; }
+.professional .bara-design-preview-hero { grid-template-columns: 1fr; padding: .5rem; background: var(--preview-panel); }
+.professional .bara-design-preview-hero > div:last-child { display: none; }
+.bara-design-preview-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: .25rem; }
+.bara-design-preview-cards i { height: .9rem; border-top: .16rem solid var(--preview-accent); background: var(--preview-panel); }
+.bara-brief-designs { margin-bottom: 1rem; }
+.bara-brief-checks label { display: flex; gap: .4rem; align-items: baseline; }
+.bara-brief-checks input { flex: none; }
+.bara-brief-form textarea { box-sizing: border-box; }
+[data-brief-values] li { white-space: pre-wrap; overflow-wrap: anywhere; }
+#consultation { scroll-margin-top: 7rem; }
 .bara-package-steps { counter-reset: package-step; list-style: none; padding: 0; max-width: 52rem; }
 .bara-package-steps li { counter-increment: package-step; position: relative; padding: 1rem 1rem 1rem 3.5rem; margin-block: .75rem; border: 1px solid var(--paper-200); border-radius: var(--radius-sm); background: var(--paper-50); }
 .bara-package-steps li::before { content: counter(package-step); position: absolute; inset-inline-start: 1rem; background: var(--ink-900); color: white; width: 1.75rem; height: 1.75rem; border-radius: 50%; text-align: center; line-height: 1.75rem; }

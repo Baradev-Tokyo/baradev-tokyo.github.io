@@ -4,6 +4,8 @@ Bara is a Django freelance website. Customers choose a service package and submi
 
 ## Development foundation
 
+The v0.5 additions are offline-first. See the [audit and system diagram](docs/architecture/README.md), [zero-cost gate](docs/architecture/cost-controls.md), and [platform rules](docs/compliance/platform-policy-matrix.md). Generate draft marketplace packages and score owner-entered opportunities using the [screening guide](docs/marketplace/opportunity-screening.md). The owner-only operations dashboard is at `/admin/bara-operations/` on the private Django application. It is outside GitHub Pages. After local migrations, use `createsuperuser` to choose your own admin login.
+
 The [architecture audit and plan](docs/architecture/README.md) record verified hosting, the private/public boundary, data design, and approval gates. See the [Japanese SEO opportunities](docs/seo-keywords.md), [integration setup](docs/architecture/integrations.md), [Stripe Japan sandbox runbook](docs/stripe-onboarding.md), and [unpublished legal drafts](docs/legal-drafts.md).
 
 The private Django app includes a Stripe test-mode module, a health probe at `/ops/health/`, and read-only reporting contracts. Apply migrations in your local Django environment before opening admin. Stripe requires explicit opt-in and a test key. The static portfolio never includes private routes. Environment variable names are in [the sample configuration](.env.example).

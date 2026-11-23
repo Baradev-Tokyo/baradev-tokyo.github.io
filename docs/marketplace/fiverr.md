@@ -1,0 +1,11 @@
+# Fiverr · manual Gig preparation
+
+## Review incoming opportunities
+
+New matched opportunities arrive in [Fiverr Inbox](https://www.fiverr.com/inbox) through Mira. In the private Bara Operations dashboard, select the Bara Development workspace and choose **Record a Fiverr opportunity**. The form preselects Fiverr and the workspace. Record a stable reference, title, and the permitted details needed to review the work. Open the opportunity from Bara Operations and approve a local reply draft. Review and send any message or custom offer from Fiverr.
+
+Fiverr's public MCP exposes public discovery and does not provide a seller inbox feed. [Mira for freelancers](https://help.fiverr.com/hc/en-us/articles/52443936155153-Finding-talent-with-Mira) · [Fiverr MCP](https://help.fiverr.com/hc/en-us/articles/52715474121361-Using-Fiverr-MCP-in-your-AI-agent)
+
+Use the owner’s existing seller profile on desktop. The six drafts provide copy, suggested category/subcategory, tags, buyer requirements and FAQs. The generated scope cards are original designs with no customer screenshots or unverifiable metrics. Confirm category-specific mandatory deliverables and price floors in the current Gig editor. Fiverr requires a USD price, delivery days and at least one revision option per package. Use one tier if higher tiers differ in ways that have not been approved. [Creating a Gig](https://help.fiverr.com/hc/en-us/articles/360010451397-Creating-a-Gig) · [Package requirements](https://help.fiverr.com/hc/en-us/articles/360010559138-Creating-and-managing-Gig-packages)
+
+Before manual publication, confirm actual USD pricing, revision commitments, available capacity and tax or identity details. Review the images and approve any portfolio asset before upload. Preserve separate platform IDs and manually enter only permitted owner-side receipts. Keep Fiverr chats, orders and payments on Fiverr. Fiverr’s standard earnings are 80% of a completed order; record actual fee and net amount. No promotions, scraping or connector posting. [Fiverr community rules](https://help.fiverr.com/hc/en-us/articles/37554441398929-Our-Community-Standards) · [Fiverr earnings](https://help.fiverr.com/hc/en-us/articles/9234443621137)

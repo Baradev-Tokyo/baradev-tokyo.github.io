@@ -1,7 +1,7 @@
 {% load i18n %}
 {% get_current_language as language %}
 {% url 'contact' as contact_url %}
-<details class="bara-consultation">
+<details id="consultation" class="bara-consultation">
   <summary class="bara-button">{% if language == 'ja' %}このサービスについて相談する{% else %}Discuss this package{% endif %}</summary>
   {% if not booking_url %}
   <h2>{% if language == 'ja' %}ご相談の受付時間（日本時間）{% else %}Consultation hours (Tokyo time){% endif %}</h2>
@@ -30,5 +30,5 @@
   {% else %}
   <p>{% if language == 'ja' %}ご希望の時間をメールでお知らせください。{% else %}Email Bara to request a time within these hours.{% endif %}</p>
   {% endif %}
-  <p><a href="{{ contact_url }}{% if static_export %}#{{ package.slug }}{% else %}?package={{ package.slug }}{% endif %}">{% if language == 'ja' %}メールで相談する{% else %}Ask by email{% endif %}</a></p>
+  <p><a href="{{ contact_url }}{% if static_export %}#{{ package.slug }}{% else %}?package={{ package.slug }}{% endif %}">{% if language == 'ja' %}プロジェクトの概要を入力する{% else %}Prepare a project brief{% endif %}</a></p>
 </details>

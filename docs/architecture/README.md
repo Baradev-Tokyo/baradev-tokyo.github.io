@@ -14,3 +14,5 @@ HTTPS responds at `https://baradev-tokyo.github.io/`. Neither `baradev.tokyo` no
 The existing portrait is a 300 × 400 JPEG of about 23 KB, with intrinsic dimensions and lazy loading. Keep local system font fallbacks and avoid adding a font download. The responsive grid has breakpoints for tablet and mobile. CI validates crawlable rendered HTML, viewport metadata, headings, navigation, links and assets; a device/browser visual regression pass remains a release check.
 
 See [system overview](system-overview.md), [data model](data-model.md), [security](security.md), [integrations](integrations.md), [cost controls](cost-controls.md), [roadmap](roadmap.md), and [decision record](decisions/0001-public-and-private-boundary.md).
+
+For v0.5, see the [current deployment audit](deployment.md), [system diagram and component boundaries](component-boundaries.md), [platform compliance matrix](../compliance/platform-policy-matrix.md), and [offline acquisition workflow](../marketplace/opportunity-screening.md).

@@ -10,11 +10,14 @@ from xml.etree.ElementTree import parse
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "bara_home"))
 from services.catalog import PACKAGES
+from blog.posts import POSTS
+from blog.social import SOCIAL_PROFILES
 
 ROOT = PROJECT_ROOT / "dist"
 ORIGIN = "https://baradev-tokyo.github.io"
 LANGUAGES = {"": "en", "ja/": "ja"}
-PAGES = ("", "services/", "about/", "contact/", "privacy/",
+PAGES = ("", "services/", "about/", "contact/", "privacy/", "blog/",
+         *(f"blog/{slug}/" for slug in POSTS),
          *(f"services/{package.slug}/" for package in PACKAGES))
 
 
@@ -24,12 +27,14 @@ class Page(HTMLParser):
         self.ids = set()
         self.links = []
         self.language = None
-        self.has_form = False
+        self.form_actions = []
         self.canonical = None
         self.alternates = {}
         self.description = None
         self.metadata = {}
         self.headings = 0
+        self.heading_levels = []
+        self.missing_image_alt = False
         self.title = ""
         self.in_title = False
         self.schema = ""
@@ -43,9 +48,13 @@ class Page(HTMLParser):
         if tag == "html":
             self.language = attrs.get("lang")
         if tag == "form":
-            self.has_form = True
+            self.form_actions.append((attrs.get("method", "").lower(), attrs.get("action")))
         if tag == "h1":
             self.headings += 1
+        if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+            self.heading_levels.append(int(tag[1]))
+        if tag == "img" and "alt" not in attrs:
+            self.missing_image_alt = True
         if tag == "title":
             self.in_title = True
         if tag == "script" and attrs.get("type") == "application/ld+json":
@@ -83,10 +92,16 @@ def check():
             url = f"/{prefix}{route}"
             page = Page((ROOT / url.strip("/") / "index.html").read_text(encoding="utf-8"))
             pages[url] = page
-            if page.language != language or page.has_form:
-                errors.append(f"{url}: expected {language} HTML with no form")
+            expected_forms = [
+                ("get", f"/{prefix}services/{package.slug}/#consultation") for package in PACKAGES
+            ] if route == "contact/" else []
+            if page.language != language or page.form_actions != expected_forms:
+                errors.append(f"{url}: invalid language or project brief form destinations")
             if "mailto:baradev.tokyo@gmail.com" not in page.links:
                 errors.append(f"{url}: missing contact address")
+            for profile in SOCIAL_PROFILES.values():
+                if profile["url"] not in page.links:
+                    errors.append(f"{url}: missing {profile['name']} profile link")
             alternate = f"/{'ja/' if language == 'en' else ''}{route}"
             if alternate not in page.links:
                 errors.append(f"{url}: missing language switch to {alternate}")
@@ -98,6 +113,8 @@ def check():
                 slug = route.strip("/").split("/")[-1]
                 if f"/{prefix}contact/#{slug}" not in page.links:
                     errors.append(f"{url}: missing package inquiry link")
+                if "consultation" not in page.ids:
+                    errors.append(f"{url}: missing consultation destination")
             expected_alternates = {
                 "en": f"{ORIGIN}/{route}",
                 "ja": f"{ORIGIN}/ja/{route}",
@@ -109,9 +126,16 @@ def check():
                 errors.append(f"{url}: missing search description")
             if page.headings != 1 or not page.title.strip() or not page.metadata.get("viewport"):
                 errors.append(f"{url}: expected an H1, page title, and mobile viewport")
+            if (
+                page.missing_image_alt or page.heading_levels[:1] != [1]
+                or any(after > before + 1 for before, after in zip(page.heading_levels, page.heading_levels[1:]))
+                or "#main" not in page.links or "main" not in page.ids
+            ):
+                errors.append(f"{url}: review heading structure, image alt text, or skip navigation")
             for key, value in {
                 "og:title": page.title.strip(), "og:url": ORIGIN + url,
                 "og:description": page.description, "og:image": ORIGIN + "/static/bara/joey.jpg",
+                "og:image:width": "300", "og:image:height": "400",
                 "twitter:card": "summary", "twitter:title": page.title.strip(),
                 "twitter:description": page.description, "twitter:image": ORIGIN + "/static/bara/joey.jpg",
             }.items():

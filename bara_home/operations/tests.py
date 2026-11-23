@@ -4,11 +4,12 @@ import json
 import time
 from datetime import date
 from decimal import Decimal
-from io import BytesIO
+from io import StringIO
 from unittest.mock import patch
-from urllib.parse import parse_qs
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import Client, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
@@ -54,6 +55,20 @@ class SandboxTests(TestCase):
         self.client.force_login(owner)
         return owner
 
+    @patch("stripe.StripeClient")
+    def test_test_payment_link_only_uses_sandbox_and_single_completion(self, client):
+        buffer = StringIO()
+        with override_settings(BARA_STRIPE_SANDBOX_ENABLED=False):
+            with self.assertRaises(CommandError):
+                call_command("stripe_test_link", "price_Fixture", "link-fixture", stdout=buffer)
+        client.assert_not_called()
+        create = client.return_value.v1.payment_links.create
+        create.return_value = {"livemode": False, "url": "https://buy.stripe.com/test_fixture"}
+        call_command("stripe_test_link", "price_Fixture", "link-fixture", stdout=buffer)
+        self.assertEqual(create.call_args.args[0]["restrictions"], {"completed_sessions": {"limit": 1}})
+        self.assertEqual(create.call_args.kwargs["options"]["idempotency_key"], "bara-test-link-link-fixture")
+        self.assertIn("https://buy.stripe.com/test_fixture", buffer.getvalue())
+
     def test_checkout_owner_and_csrf(self):
         self.assertEqual(self.client.post(self.checkout_url).status_code, 302)
         staff = get_user_model().objects.create_user("staff", is_staff=True)
@@ -68,39 +83,41 @@ class SandboxTests(TestCase):
             self.assertEqual(self.client.post(self.checkout_url).status_code, 404)
             self.assertEqual(self.client.post(WEBHOOK).status_code, 404)
 
-    @patch("operations.stripe_gateway.urlopen")
+    @patch("stripe.StripeClient")
     def test_checkout_uses_server_price_and_idempotency_key(self, network):
         self.login_owner()
         payload = {"id": "cs_test_Fixture", "url": "https://checkout.stripe.com/c/pay/test", "livemode": False}
-        network.side_effect = [TimeoutError, BytesIO(json.dumps(payload).encode())]
+        create = network.return_value.v1.checkout.sessions.create
+        create.side_effect = [TimeoutError, payload]
         self.assertEqual(self.client.post(self.checkout_url).status_code, 503)
         self.assertEqual(self.client.post(self.checkout_url, {"price": "price_Attacker"})["Location"], payload["url"])
         self.assertEqual(self.client.post(self.checkout_url)["Location"], payload["url"])
-        self.assertEqual(network.call_count, 2)
-        first, second = [call.args[0] for call in network.call_args_list]
-        self.assertEqual(first.headers["Idempotency-key"], second.headers["Idempotency-key"])
-        self.assertEqual(parse_qs(second.data.decode())["line_items[0][price]"], ["price_Fixture"])
-        self.assertEqual(parse_qs(second.data.decode())["mode"], ["payment"])
-        self.assertEqual(parse_qs(second.data.decode())["invoice_creation[enabled]"], ["true"])
+        self.assertEqual(create.call_count, 2)
+        first, second = create.call_args_list
+        self.assertEqual(first.kwargs["options"], second.kwargs["options"])
+        self.assertEqual(second.args[0]["line_items"], [{"price": "price_Fixture", "quantity": 1}])
+        self.assertEqual(second.args[0]["mode"], "payment")
+        self.assertEqual(second.args[0]["invoice_creation"], {"enabled": True})
         self.client.get("/ops/billing/result/?outcome=returned")
         self.client.get("/ops/billing/result/?outcome=cancelled")
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, "pending")
 
-    @patch("operations.stripe_gateway.urlopen")
+    @patch("stripe.StripeClient")
     def test_maintenance_uses_recurring_checkout(self, network):
         self.login_owner()
         order = BillingOrder.objects.create(
             customer=self.customer, kind=BillingOrder.Kind.MAINTENANCE, stripe_price="price_Monthly"
         )
-        network.return_value = BytesIO(json.dumps({
+        create = network.return_value.v1.checkout.sessions.create
+        create.return_value = {
             "id": "cs_test_Monthly", "url": "https://checkout.stripe.com/c/pay/test", "livemode": False,
-        }).encode())
+        }
         response = self.client.post(reverse("sandbox_checkout", args=(order.pk,)))
         self.assertEqual(response.status_code, 302)
-        fields = parse_qs(network.call_args.args[0].data.decode())
-        self.assertEqual(fields["mode"], ["subscription"])
-        self.assertNotIn("invoice_creation[enabled]", fields)
+        fields = create.call_args.args[0]
+        self.assertEqual(fields["mode"], "subscription")
+        self.assertNotIn("invoice_creation", fields)
 
     def test_webhook_refuses_invalid_expired_and_live_events(self):
         body = b"{}"
@@ -150,7 +167,7 @@ class SandboxTests(TestCase):
         current = Invoice.objects.get()
         self.assertEqual((current.status, current.amount_paid, current.payment_failed), ("paid", 3000, False))
 
-    @patch("operations.stripe_gateway.urlopen")
+    @patch("stripe.StripeClient")
     @override_settings(BARA_STRIPE_TEST_KEY="sk_live_fixture")
     def test_live_key_is_refused_before_network(self, network):
         self.login_owner()

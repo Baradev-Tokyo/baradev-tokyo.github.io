@@ -52,6 +52,10 @@ htmlcov/
 # Personal notes
 docs/*
 !docs/architecture/
+!docs/compliance/
+!docs/marketplace/
+!docs/operations/
+!docs/seo-audit.md
 !docs/seo-keywords.md
 !docs/stripe-onboarding.md
 !docs/legal-drafts.md
@@ -60,3 +64,4 @@ bara_home/text.txt
 front-end/static/pics/
 front-end/static/private.md
 dist-report-preview/
+dist-marketplace/

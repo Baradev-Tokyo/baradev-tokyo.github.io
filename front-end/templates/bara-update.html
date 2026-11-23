@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ post.title }} | Bara{% endblock %}
+{% block content %}
+{% get_current_language as language %}
+<article class="bara-wrap bara-section" aria-labelledby="article-title">
+  <p><a href="{% url 'blog' %}">{% if language == "ja" %}ブログ一覧{% else %}All posts{% endif %}</a></p>
+  <div class="bara-card">
+    <h1 id="article-title">{{ post.title }}</h1>
+    {% for paragraph in post.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+    <p><a href="{% url 'about' %}#pedal-somewhere">{% if language == "ja" %}Pedal Somewhereの事例を読む{% else %}Read the Pedal Somewhere case study{% endif %}</a></p>
+    {% if post.social_links %}
+    <ul>
+      {% for platform, url in post.social_links.items %}
+      <li><a href="{{ url }}">{% if language == "ja" %}{{ platform }}で投稿を見る{% else %}View the post on {{ platform }}{% endif %}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% get_current_language as language %}{% if language == "ja" %}Baraブログ{% else %}Bara Blog{% endif %}{% endblock %}
+{% block content %}
+{% get_current_language as language %}
+<section class="bara-wrap bara-section" aria-labelledby="blog-title">
+  <h1 id="blog-title">{% if language == "ja" %}Baraブログ{% else %}Bara blog{% endif %}</h1>
+  <div class="bara-grid">
+    {% for post in posts %}
+    <article class="bara-card">
+      <h2><a href="{% url 'blog-details' slug=post.slug %}">{{ post.title }}</a></h2>
+      <p>{{ post.summary }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

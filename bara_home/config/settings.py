@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'about',
     'operations',
     'reporting',
+    'acquisition',
+    'content_queue',
 ]
 
 BARA_STRIPE_SANDBOX_ENABLED = os.getenv("BARA_STRIPE_SANDBOX_ENABLED") == "true"

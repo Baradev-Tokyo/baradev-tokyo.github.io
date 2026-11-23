@@ -35,6 +35,8 @@ class CalendarAndRenderTests(SimpleTestCase):
         now = datetime(2028, 2, 29, 15, tzinfo=utc.utc)
         self.assertEqual(closed_period(now, "Asia/Tokyo", "monthly", 0),
                          (date(2028, 2, 1), date(2028, 3, 1)))
+        self.assertEqual(closed_period(now, "Asia/Tokyo", "daily", 0),
+                         (date(2028, 2, 29), date(2028, 3, 1)))
         self.assertEqual(closed_period(now, "Asia/Tokyo", "monthly", 2),
                          (date(2028, 1, 1), date(2028, 2, 1)))
         now = datetime(2026, 11, 22, 15, tzinfo=utc.utc)

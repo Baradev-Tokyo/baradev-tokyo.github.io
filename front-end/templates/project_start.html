@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block content %}
+{% get_current_language as language %}
+<section class="bara-wrap bara-section">
+  <h1>{% translate "Start a project" %}</h1>
+  <p class="bara-intro">{% if language == 'ja' %}サービスを選び、ご希望を整理してからご相談の予約へ進めます。{% else %}Choose a package, outline what you need, then book a consultation.{% endif %}</p>
+  <p>{% if language == 'ja' %}入力内容はこのタブに一時保存されます。相談前にメールで共有できます。パスワードや顧客情報は入力しないでください。{% else %}Your brief stays in this tab. You can email it to Bara before the consultation. Leave out passwords and customer data.{% endif %}</p>
+  <noscript><p>{% if language == 'ja' %}入力内容を次の画面に引き継ぐには、JavaScriptを有効にしてください。{% else %}Enable JavaScript to carry your brief to the next page.{% endif %}</p></noscript>
+  <div class="bara-brief-list">
+    {% for brief in briefs %}
+    <details id="{{ brief.slug }}" name="package-brief" class="bara-card bara-brief-option">
+      <summary>{{ brief.name }}</summary>
+      <form class="bara-brief-form" action="{% url 'package_detail' slug=brief.slug %}#consultation" method="get" data-project-brief data-package="{{ brief.slug }}">
+        {% if brief.designs %}
+        <fieldset>
+          <legend>{% if language == 'ja' %}デザインの参考例{% else %}Design inspiration{% endif %}</legend>
+          <div class="bara-brief-designs">
+            {% for key, name, description, link in brief.designs %}
+            <div class="bara-brief-design {{ key }}">
+              <div class="bara-design-preview" aria-hidden="true">
+                <div class="bara-design-preview-nav"><i></i><i></i><i></i></div>
+                <div class="bara-design-preview-hero"><div><i></i><i></i><i></i></div><div></div></div>
+                <div class="bara-design-preview-cards"><i></i><i></i><i></i></div>
+              </div>
+              <strong>{{ name }}</strong>
+              <p>{{ description }}</p>
+              <a href="{{ link }}" target="_blank" rel="noopener noreferrer">{% if language == 'ja' %}Bootstrapの作例を見る（新しいタブ）{% else %}View Bootstrap example (new tab){% endif %}</a>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="bara-field">
+            <label for="{{ brief.slug }}-design">{% if language == 'ja' %}ご希望のデザイン{% else %}Preferred design{% endif %}</label>
+            <select id="{{ brief.slug }}-design" data-brief-choice>
+              <option value="">{% if language == 'ja' %}未定・相談したい{% else %}Undecided / discuss together{% endif %}</option>
+              {% for key, name, description, link in brief.designs %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
+            </select>
+          </div>
+        </fieldset>
+        {% endif %}
+        <fieldset>
+          <legend>{% if language == 'ja' %}希望する機能・対応{% else %}Features and support to discuss{% endif %}</legend>
+          <p>{% if language == 'ja' %}複数選択できます。標準範囲を超える機能は別途お見積もりします。{% else %}Select any that apply. Features beyond the package scope are quoted separately.{% endif %}</p>
+          <div class="bara-brief-checks">
+            {% for feature in brief.features %}
+            <label><input type="checkbox" value="{{ feature }}" data-brief-choice> {{ feature }}</label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        <div class="bara-field">
+          <label for="{{ brief.slug }}-notes">{% if language == 'ja' %}プロジェクトの概要（任意）{% else %}Project notes (optional){% endif %}</label>
+          <p id="{{ brief.slug }}-prompt">{{ brief.prompt }}</p>
+          <textarea id="{{ brief.slug }}-notes" aria-describedby="{{ brief.slug }}-prompt" rows="4" maxlength="500" data-brief-notes></textarea>
+        </div>
+        <div class="bara-field">
+          <label for="{{ brief.slug }}-date">{% if language == 'ja' %}希望の公開・導入日（任意）{% else %}Target launch date (optional){% endif %}</label>
+          <input type="date" id="{{ brief.slug }}-date" data-brief-choice>
+        </div>
+        <button type="submit" class="bara-button">{% if language == 'ja' %}サービス詳細と相談予約へ{% else %}Continue to package and booking{% endif %}</button>
+      </form>
+    </details>
+    {% endfor %}
+  </div>
+  <p><a href="mailto:baradev.tokyo@gmail.com">{% if language == 'ja' %}メールで相談する{% else %}Ask by email{% endif %}</a></p>
+</section>
+<script src="{% static 'project-brief.js' %}" defer></script>
+{% endblock %}

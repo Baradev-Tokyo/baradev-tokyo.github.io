@@ -58,7 +58,7 @@ class ReportConfiguration(models.Model):
     organization = models.ForeignKey(Workspace, on_delete=models.PROTECT)
     recipients = models.ManyToManyField(VerifiedEmailRecipient, blank=True)
     kind = models.CharField(max_length=24, choices=ReportKind)
-    frequency = models.CharField(max_length=7, choices=[("weekly", "Weekly"), ("monthly", "Monthly")])
+    frequency = models.CharField(max_length=7, choices=[("daily", "Daily"), ("weekly", "Weekly"), ("monthly", "Monthly")])
     timezone = models.CharField(max_length=64, default="Asia/Tokyo")
     language = models.CharField(max_length=2, choices=[("en", "English"), ("ja", "Japanese")], default="ja")
     delay_days = models.PositiveSmallIntegerField(default=2)

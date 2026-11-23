@@ -1,0 +1,2 @@
+<pre class="queue-text">{{ item.text }}</pre>
+{% if item.media %}<img class="queue-image" src="{% url 'content_queue:media' item.workspace_id item.pk %}" alt="Publication media preview">{% endif %}

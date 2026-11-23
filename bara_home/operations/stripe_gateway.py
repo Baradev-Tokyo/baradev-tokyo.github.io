@@ -1,13 +1,9 @@
 """Small Stripe sandbox adapter for hosted Checkout and snapshot webhooks."""
 
-import hashlib
-import hmac
 import json
 import re
 import time
-from urllib.error import URLError
-from urllib.parse import urlencode, urlsplit
-from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
 
 from django.conf import settings
 
@@ -20,27 +16,31 @@ class InvalidEvent(ValueError):
     pass
 
 
+def stripe_sdk():
+    try:
+        import stripe
+    except ImportError:
+        raise StripeError("Install the private reporting dependencies to use Stripe.") from None
+    return stripe
+
+
 class StripeGateway:
     def __init__(self):
-        self.key = settings.BARA_STRIPE_TEST_KEY
-        if not self.key.startswith(("sk_test_", "rk_test_")):
+        key = settings.BARA_STRIPE_TEST_KEY
+        if not key.startswith(("sk_test_", "rk_test_")):
             raise StripeError("A Stripe test key is required.")
+        self.sdk = stripe_sdk()
+        self.client = self.sdk.StripeClient(
+            key, stripe_version=settings.BARA_STRIPE_API_VERSION,
+            max_network_retries=0, http_client=self.sdk.RequestsClient(timeout=10),
+        ).v1
 
-    def request(self, path, fields=None, idempotency_key=None):
-        headers = {
-            "Authorization": f"Bearer {self.key}",
-            "Stripe-Version": settings.BARA_STRIPE_API_VERSION,
-        }
-        if idempotency_key:
-            headers["Idempotency-Key"] = idempotency_key
-        data = urlencode(fields).encode() if fields is not None else None
-        if data is not None:
-            headers["Content-Type"] = "application/x-www-form-urlencoded"
-        request = Request("https://api.stripe.com/v1/" + path, data=data, headers=headers)
+    def request(self, method, *args, **kwargs):
         try:
-            with urlopen(request, timeout=10) as response:
-                result = json.load(response)
-        except (OSError, URLError, ValueError) as exc:
+            result = method(*args, **kwargs)
+            if isinstance(result, self.sdk.StripeObject):
+                result = result.to_dict_recursive()
+        except (self.sdk.StripeError, OSError, ValueError) as exc:
             raise StripeError("Stripe sandbox request failed.") from exc
         if not isinstance(result, dict) or result.get("livemode") is not False:
             raise StripeError("Unexpected Stripe sandbox response.")
@@ -64,26 +64,40 @@ class StripeGateway:
         fields = {
             "customer": order.customer.stripe_id,
             "mode": order.mode,
-            "line_items[0][price]": order.stripe_price,
-            "line_items[0][quantity]": 1,
+            "line_items": [{"price": order.stripe_price, "quantity": 1}],
             "success_url": success,
             "cancel_url": cancel,
             "client_reference_id": str(order.pk),
         }
         if order.mode == "payment":
-            fields["invoice_creation[enabled]"] = "true"
-        return self.request("checkout/sessions", fields, idempotency_key=f"bara-test-checkout-{order.pk}")
+            fields["invoice_creation"] = {"enabled": True}
+        return self.request(self.client.checkout.sessions.create, fields,
+                            options={"idempotency_key": f"bara-test-checkout-{order.pk}"})
+
+    def test_payment_link(self, price_id, request_id):
+        if not re.fullmatch(r"price_[A-Za-z0-9]+", price_id) or not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", request_id):
+            raise StripeError("Use a sandbox Price ID and a stable test request ID.")
+        return self.request(
+            self.client.payment_links.create,
+            {"line_items": [{"price": price_id, "quantity": 1}],
+             "restrictions": {"completed_sessions": {"limit": 1}}},
+            options={"idempotency_key": f"bara-test-link-{request_id}"},
+        )
 
     def retrieve(self, resource, identifier):
         prefix = {"checkout/sessions": "cs_test_", "subscriptions": "sub_", "invoices": "in_"}[resource]
         if not re.fullmatch(re.escape(prefix) + r"[A-Za-z0-9]+", identifier):
             raise InvalidEvent("Invalid Stripe object identifier.")
-        return self.request(f"{resource}/{identifier}")
+        service = {"checkout/sessions": self.client.checkout.sessions,
+                   "subscriptions": self.client.subscriptions, "invoices": self.client.invoices}[resource]
+        return self.request(service.retrieve, identifier)
 
 
 def verify_snapshot(payload, signature_header, secret, now=None):
     if not secret.startswith("whsec_"):
         raise StripeError("A webhook signing secret is required.")
+    if not signature_header.isascii():
+        raise InvalidEvent("Invalid signature header.")
     parts = [part.partition("=") for part in signature_header.split(",")]
     try:
         timestamp, = [value for name, _, value in parts if name == "t"]
@@ -94,14 +108,13 @@ def verify_snapshot(payload, signature_header, secret, now=None):
         raise InvalidEvent("Invalid timestamp.") from exc
     if abs((time.time() if now is None else now) - timestamp_number) > 300:
         raise InvalidEvent("Expired signature.")
-    expected = hmac.new(secret.encode(), timestamp.encode() + b"." + payload, hashlib.sha256).hexdigest()
-    if not any(
-        name == "v1" and value.isascii() and hmac.compare_digest(value, expected)
-        for name, _, value in parts
-    ):
-        raise InvalidEvent("Invalid signature.")
+    sdk = stripe_sdk()
     try:
-        event = json.loads(payload)
+        body = payload.decode("utf-8")
+        sdk.WebhookSignature.verify_header(body, signature_header, secret, tolerance=None)
+        event = json.loads(body)
+    except sdk.SignatureVerificationError as exc:
+        raise InvalidEvent("Invalid signature.") from exc
     except (UnicodeError, ValueError) as exc:
         raise InvalidEvent("Invalid event body.") from exc
     if (
