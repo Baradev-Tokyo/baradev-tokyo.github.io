@@ -1,0 +1,52 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)]
+    [ValidateSet('instagram', 'facebook')]
+    [string]$Channel,
+    [switch]$Save
+)
+
+$ErrorActionPreference = 'Stop'
+$repo = Split-Path -Parent $PSScriptRoot
+$python = Join-Path $repo '.venv\Scripts\python.exe'
+$manage = Join-Path $repo 'bara_home\manage.py'
+$folder = Join-Path $env:LOCALAPPDATA 'Bara\Credentials'
+$credentialPath = Join-Path $folder "$Channel.dpapi"
+$variable = if ($Channel -eq 'instagram') {
+    'BARA_INSTAGRAM_ACCESS_TOKEN'
+} else {
+    'BARA_FACEBOOK_PAGE_ACCESS_TOKEN'
+}
+
+$credential = if ($Save) {
+    Read-Host "Paste the $Channel access token (hidden)" -AsSecureString
+} else {
+    if (!(Test-Path -LiteralPath $credentialPath -PathType Leaf)) {
+        throw 'No stored credential. Run again with -Save to add it.'
+    }
+    Get-Content -LiteralPath $credentialPath -Raw | ConvertTo-SecureString
+}
+
+if ($credential.Length -eq 0) {
+    throw 'The access token is empty.'
+}
+
+$previousToken = [Environment]::GetEnvironmentVariable($variable, 'Process')
+try {
+    $token = [System.Net.NetworkCredential]::new('', $credential).Password.Trim()
+    [Environment]::SetEnvironmentVariable($variable, $token, 'Process')
+    & $python $manage check_social_connection $Channel
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Account verification failed. The saved credential was not changed.'
+    }
+    if ($Save) {
+        New-Item -ItemType Directory -Path $folder -Force | Out-Null
+        ConvertFrom-SecureString -SecureString $credential |
+            Set-Content -LiteralPath $credentialPath -Encoding ASCII
+        Write-Output "Saved encrypted $Channel credential under $folder."
+    }
+} finally {
+    [Environment]::SetEnvironmentVariable($variable, $previousToken, 'Process')
+    $credential.Dispose()
+    Remove-Variable token, previousToken -ErrorAction SilentlyContinue
+}

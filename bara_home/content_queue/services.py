@@ -34,7 +34,8 @@ def validate_content(draft):
     if draft.platform not in Platform.values:
         raise ValidationError("Choose a supported channel.")
     text = re.sub(r"https?://\S+", "x" * 23, draft.text) if draft.platform == Platform.X else draft.text
-    limit = {Platform.X: 280, Platform.INSTAGRAM: 2200, Platform.BLOG: 20000}[draft.platform]
+    limits = {Platform.X: 280, Platform.INSTAGRAM: 2200, Platform.YOUTUBE: 5000, Platform.TIKTOK: 2200}
+    limit = limits.get(draft.platform, 20000)
     length = sum(2 if ord(char) > 0x10FF else 1 for char in text) if draft.platform == Platform.X else len(text)
     if length > limit:
         raise ValidationError(f"Publication text exceeds the {limit}-character limit.")
@@ -177,6 +178,8 @@ def change_job(workspace_id, job_id, action, actor, *, scheduled_at=None, replac
 def set_channel(workspace_id, platform, paused, actor):
     if platform not in Platform.values:
         raise ValidationError("Unknown channel.")
+    if platform == Platform.LINKEDIN and not paused:
+        raise ValidationError("LinkedIn is disabled at the owner's request.")
     with workspace_lock(workspace_id):
         ChannelSettings.objects.update_or_create(workspace_id=workspace_id, platform=platform,
                                                  defaults={"paused": paused})

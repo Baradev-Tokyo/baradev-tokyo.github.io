@@ -45,7 +45,8 @@ class Command(BaseCommand):
             for platform in Platform.values:
                 ChannelSettings.objects.get_or_create(workspace=workspace, platform=platform)
             for index, (category, text) in enumerate(SAMPLES):
-                platform = Platform.values[index % len(Platform.values)]
+                sample_platforms = [Platform.BLOG, Platform.INSTAGRAM, Platform.X, Platform.FACEBOOK]
+                platform = sample_platforms[index % len(sample_platforms)]
                 media = "bara/joey.jpg" if platform == Platform.INSTAGRAM else ""
                 draft = save_draft(workspace.pk, platform, category, text, media)
                 draft.state = State.VALIDATED

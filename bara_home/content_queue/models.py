@@ -10,6 +10,10 @@ class Platform(models.TextChoices):
     BLOG = "blog", "Blog"
     INSTAGRAM = "instagram", "Instagram"
     X = "x", "X"
+    FACEBOOK = "facebook", "Facebook"
+    TIKTOK = "tiktok", "TikTok"
+    YOUTUBE = "youtube", "YouTube"
+    LINKEDIN = "linkedin", "LinkedIn"
 
 
 class State(models.TextChoices):
@@ -53,6 +57,17 @@ class ContentDraft(models.Model):
 
     def __str__(self):
         return self.text.splitlines()[0][:90] if self.text else str(self.pk)
+
+
+class ContentPoolEntry(models.Model):
+    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT)
+    url = models.URLField(max_length=1000)
+    note = models.TextField(max_length=2000, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["workspace", "url"], name="content_pool_unique_link")]
 
 
 class PublicationJob(models.Model):

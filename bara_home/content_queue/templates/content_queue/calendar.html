@@ -26,6 +26,7 @@
 <h1>Content calendar</h1>
 <p>All times are Asia/Tokyo. Publishing is in local mock mode.</p>
 {% if workspace %}
+<p><a href="{% url 'content_queue:pool' workspace.pk %}">Content pool</a></p>
 <form method="get" class="queue-controls" aria-label="Calendar filters">
   <label>Workspace <select name="workspace">{% for item in workspaces %}<option value="{{ item.pk }}"{% if item.pk == workspace.pk %} selected{% endif %}>{{ item.name }}</option>{% endfor %}</select></label>
   <label>Platform <select name="platform"><option value="">All</option>{% for value,label in platforms %}<option value="{{ value }}"{% if filters.platform == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
@@ -42,11 +43,13 @@
 </form>
 <div class="queue-controls">
   {% for value,label,paused in channels %}
+  {% if value == "linkedin" %}<p>LinkedIn paused</p>{% else %}
   <form method="post" action="?workspace={{ workspace.pk }}">{% csrf_token %}
     <input type="hidden" name="action" value="channel"><input type="hidden" name="platform" value="{{ value }}">
     <input type="hidden" name="paused" value="{% if paused %}0{% else %}1{% endif %}">
     <button type="submit">{% if paused %}Resume{% else %}Pause{% endif %} {{ label }}</button>
   </form>
+  {% endif %}
   {% endfor %}
 </div>
 <details class="queue-card">
@@ -98,6 +101,7 @@
     {% if job %}
     <p>{{ job.get_platform_display }} · {{ job.get_state_display }} · {{ job.scheduled_at|date:"Y-m-d H:i" }}</p>
     {% include "content_queue/draft_content.html" with item=job.draft %}
+    {% if x_compose_url %}<p><a href="{{ x_compose_url }}" rel="noreferrer">Open draft in X composer</a> · Review and post on X. Attach any image there.</p>{% endif %}
     {% if job.last_error %}<p class="errornote">{{ job.last_error }}</p>{% endif %}
     {% if job.external_reference %}<p>Publication reference {{ job.external_reference }}</p>{% endif %}
     {% if job.dispatch_started and job.state == "publishing" %}<p>The publisher has started the request. Cancellation can no longer be guaranteed.</p>{% endif %}

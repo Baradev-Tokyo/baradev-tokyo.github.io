@@ -16,6 +16,8 @@ The seed command creates a separate **Bara Content Calendar Demo** with one futu
 
 ## Operator workflow
 
+Open **Content pool** from the calendar to save a source link and private note. Choose a saved link, add original commentary and create an unpublished channel draft. The note stays private. Bara does not fetch or re-upload the source media. Use an asset you own or have permission to redistribute when a channel needs an image.
+
 - Inspect scheduled and completed posts by platform, category and status. Choose an item to preview the exact text and stored image. Images are snapshotted from approved local Bara assets when the draft is created and are served only to the owner.
 - Approve a draft from the preview, then queue it at a Tokyo date and time. To link it to a campaign, select that campaign’s publication and choose **Add to selected publication’s campaign** when scheduling a draft for another channel.
 - Replace one channel or an entire campaign. Existing validated drafts can be selected immediately. Editing creates a new draft; generating uses the existing Bara article/social preview data. Both require approval before they replace queued material. Replacement retains the original times and the complete revision record.

@@ -1,6 +1,7 @@
 from calendar import Calendar
 from datetime import date, datetime, time, timedelta
 from uuid import UUID
+from urllib.parse import urlencode
 
 from django.contrib import admin, messages
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -194,6 +195,8 @@ def calendar_view(request):
                        campaign_mutable=all(can_change(item) for item in campaign),
                        edit_revision=job.history.filter(action__in=["scheduled", "replace", "reschedule", "cancel",
                                                                     "cancel_replace"]).order_by("-pk").first())
+        if job.platform == Platform.X and not settings.get(Platform.X, True) and can_change(job):
+            context["x_compose_url"] = "https://x.com/intent/tweet?" + urlencode({"text": job.draft.text})
     if request.GET.get("draft", "").isascii() and request.GET.get("draft", "").isdecimal() and len(request.GET["draft"]) < 19:
         context["draft_preview"] = get_object_or_404(drafts, pk=int(request.GET["draft"]))
     return render(request, "content_queue/calendar.html", context)

@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import override
 
 from blog.posts import POSTS, localized_post
-from blog.social import preview_social_post
+from blog.social import SOCIAL_CHANNELS, preview_social_post
 
 from .models import ChannelSettings, ContentDraft, Platform, PublicationJob, State
 from .services import TOKYO, _enqueue, record, save_draft, similar_content, workspace_lock
@@ -26,7 +26,7 @@ def article_content(slug, platform):
 
 
 def generate_article_draft(workspace_id, platform, slug, media="", actor=None):
-    if slug not in POSTS or platform not in Platform.values:
+    if slug not in POSTS or (platform != Platform.BLOG and platform not in SOCIAL_CHANNELS):
         raise ValidationError("Choose an existing Bara article and supported channel.")
     text = article_content(slug, platform)
     existing = ContentDraft.objects.filter(workspace_id=workspace_id, platform=platform, text=text, media=media).first()
@@ -54,7 +54,7 @@ def _fill(policy, channels, scheduled_at, counts, cancelled=None):
         return job
     if policy.generation_enabled:
         for channel in channels:
-            if channel != Platform.INSTAGRAM:  # Automatic generation has no authorized Instagram artwork.
+            if channel in {Platform.BLOG, Platform.FACEBOOK, Platform.X}:
                 for slug in POSTS:
                     try:
                         generate_article_draft(policy.workspace_id, channel, slug)

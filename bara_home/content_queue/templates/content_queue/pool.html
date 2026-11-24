@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<p><a href="{% url 'content_queue:calendar' %}?workspace={{ workspace.pk }}">Back to content calendar</a></p>
+<h1>Content pool</h1>
+<p>Save a source URL and a private note. Create a draft with your own commentary and a link to the original. Use media you own or have permission to redistribute.</p>
+<form method="post">{% csrf_token %}
+  {{ link_form.as_p }}
+  <button name="action" value="add">Save link</button>
+</form>
+{% if selected %}
+<section>
+  <h2>Draft a link share</h2>
+  <p><a href="{{ selected.url }}" target="_blank" rel="noopener noreferrer">Open original source</a></p>
+  {% if selected.note %}{{ selected.note|linebreaks }}{% endif %}
+  <form method="post">{% csrf_token %}
+    {{ share_form.as_p }}
+    <button name="action" value="draft">Create draft for approval</button>
+  </form>
+</section>
+{% endif %}
+<h2>Saved links</h2>
+<ul>
+{% for entry in entries %}
+  <li><a href="?entry={{ entry.pk }}">{{ entry.url|truncatechars:100 }}</a> · {{ entry.created_at|date:"Y-m-d" }}</li>
+{% empty %}<li>No saved links yet.</li>{% endfor %}
+</ul>
+{% endblock %}
