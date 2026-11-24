@@ -28,4 +28,16 @@ Paste each token only into its hidden prompt. After verifying the expected accou
 - **X**. Resume X in Bara, review a scheduled draft and choose **Open draft in X composer**. A person finishes posting on X. Leave API calls disabled under the ¥0 policy. [X API pricing](https://docs.x.com/x-api/getting-started/pricing)
 - **LinkedIn**. Paused. No account or verification action is needed.
 
-Never put credentials in this document, chat, or Git. The identity checks make one read-only request and do not establish automatic renewal or posting permissions. The calendar worker still uses the mock publisher.
+Never put credentials in this document, chat, or Git. The identity checks make one read-only request. They do not establish automatic renewal or posting permissions. The recurring calendar worker still uses the mock publisher.
+
+## Publish one approved Meta post
+
+In the **Bara Development** calendar, approve the exact text and asset, queue the draft, and resume its channel. Facebook currently supports text with URLs in the message. Instagram requires an approved JPEG already served by the Bara site at its static asset URL. The publisher checks the live image bytes against the saved draft snapshot.
+
+When the post is due, copy its publication ID and draft ID from the preview. Run this from the repository root, substituting the channel and both IDs. This command sends the post live:
+
+```powershell
+& .\scripts\check-meta-connection.ps1 -Channel facebook -PublicationId 'PUBLICATION_UUID' -ConfirmDraft 123
+```
+
+The command verifies account identity, claims just that one approved job and records Meta's returned reference. If the outcome of a final request is uncertain, check the public channel before taking any action. The queue will not resend an ambiguous request automatically.

@@ -24,7 +24,7 @@
 {% timezone "Asia/Tokyo" %}
 <p><a href="{% url 'bara_operations' %}{% if workspace %}?workspace={{ workspace.pk }}{% endif %}">Back to Bara Operations</a></p>
 <h1>Content calendar</h1>
-<p>All times are Asia/Tokyo. Publishing is in local mock mode.</p>
+<p>All times are Asia/Tokyo. The recurring worker uses mock publishing. Facebook and Instagram support a separate, explicit live publish command.</p>
 {% if workspace %}
 <p><a href="{% url 'content_queue:pool' workspace.pk %}">Content pool</a></p>
 <form method="get" class="queue-controls" aria-label="Calendar filters">
@@ -100,6 +100,9 @@
     <h2>Publication preview</h2>
     {% if job %}
     <p>{{ job.get_platform_display }} · {{ job.get_state_display }} · {{ job.scheduled_at|date:"Y-m-d H:i" }}</p>
+    {% if job.platform == "facebook" or job.platform == "instagram" %}
+    <p>Publication ID <code>{{ job.pk }}</code><br>Draft ID <code>{{ job.draft_id }}</code></p>
+    {% endif %}
     {% include "content_queue/draft_content.html" with item=job.draft %}
     {% if x_compose_url %}<p><a href="{{ x_compose_url }}" rel="noreferrer">Open draft in X composer</a> · Review and post on X. Attach any image there.</p>{% endif %}
     {% if job.last_error %}<p class="errornote">{{ job.last_error }}</p>{% endif %}

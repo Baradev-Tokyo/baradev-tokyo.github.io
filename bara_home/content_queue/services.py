@@ -196,12 +196,15 @@ class MockPublisher:
         return f"mock:{job.pk}"
 
 
-def claim_due(workspace_id, now):
+def claim_due(workspace_id, now, *, job_id=None, draft_id=None):
     with workspace_lock(workspace_id):
         enabled = ChannelSettings.objects.filter(workspace_id=workspace_id, paused=False).values("platform")
-        job = PublicationJob.objects.filter(
+        jobs = PublicationJob.objects.filter(
             workspace_id=workspace_id, platform__in=enabled, state=State.QUEUED, scheduled_at__lte=now,
-        ).filter(Q(retry_at__isnull=True) | Q(retry_at__lte=now)).order_by("scheduled_at", "pk").first()
+        ).filter(Q(retry_at__isnull=True) | Q(retry_at__lte=now))
+        if job_id is not None:
+            jobs = jobs.filter(pk=job_id, draft_id=draft_id)
+        job = jobs.order_by("scheduled_at", "pk").first()
         if job:
             job.state = State.PUBLISHING
             job.save(update_fields=["state"])

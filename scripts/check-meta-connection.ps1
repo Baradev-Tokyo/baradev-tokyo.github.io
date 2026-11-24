@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory)]
     [ValidateSet('instagram', 'facebook')]
     [string]$Channel,
-    [switch]$Save
+    [switch]$Save,
+    [guid]$PublicationId,
+    [int]$ConfirmDraft
 )
 
 $ErrorActionPreference = 'Stop'
@@ -16,6 +18,11 @@ $variable = if ($Channel -eq 'instagram') {
     'BARA_INSTAGRAM_ACCESS_TOKEN'
 } else {
     'BARA_FACEBOOK_PAGE_ACCESS_TOKEN'
+}
+
+$publish = $PSBoundParameters.ContainsKey('PublicationId')
+if ($publish -and ($PublicationId -eq [guid]::Empty -or $Save -or $ConfirmDraft -lt 1)) {
+    throw 'Verify and save credentials first. Publishing requires the selected publication ID and confirmed draft ID.'
 }
 
 $credential = if ($Save) {
@@ -35,9 +42,13 @@ $previousToken = [Environment]::GetEnvironmentVariable($variable, 'Process')
 try {
     $token = [System.Net.NetworkCredential]::new('', $credential).Password.Trim()
     [Environment]::SetEnvironmentVariable($variable, $token, 'Process')
-    & $python $manage check_social_connection $Channel
+    if ($publish) {
+        & $python $manage publish_meta_post $Channel $PublicationId --confirm-draft $ConfirmDraft
+    } else {
+        & $python $manage check_social_connection $Channel
+    }
     if ($LASTEXITCODE -ne 0) {
-        throw 'Account verification failed. The saved credential was not changed.'
+        throw 'The Meta command failed. The saved credential was not changed.'
     }
     if ($Save) {
         New-Item -ItemType Directory -Path $folder -Force | Out-Null
